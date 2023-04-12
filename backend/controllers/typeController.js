@@ -7,8 +7,8 @@ const path = require('path');
 class TypeController {
     async create(req, res, next) {
 
-        let { name, description, author } = req.body
-        const { img } = req.files
+        let { name, description, author, workers } = req.body
+        // const { img } = req.files
         
         const meme = await Contests.findOne({where: {name}})
 
@@ -19,10 +19,10 @@ class TypeController {
         }
 
 
-        let fileName = uuid.v4() + ".jpg"
-        img.mv(path.resolve(__dirname, '..', 'static', fileName))
+        // let fileName = uuid.v4() + ".jpg"
+        // img.mv(path.resolve(__dirname, '..', 'static', fileName))
         
-        const cont = await Contests.create({ name, description, photo: fileName, author });
+        const cont = await Contests.create({ name, description,  author , workers });
 
         return res.json(cont)
 

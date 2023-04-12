@@ -17,6 +17,7 @@ const Contests = sequelize.define('contests', {
     name: {type: DataTypes.STRING},
     description: {type: DataTypes.STRING},
     author: {type: DataTypes.INTEGER},
+    workers: {type: DataTypes.INTEGER},
     users: {type: DataTypes.JSON, defaultValue: "{ }"}
 
 })

@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { LoginInput } from '../../pages/Login';
 import { RegisterInput } from '../../pages/Register';
 import { IGenericResponse, IUserState } from './types';
-import { setUser } from '../features/userSlice';
+
 
 
 
@@ -21,27 +21,22 @@ export const projectsApi = createApi({
                 };
             },
         }),
-        loginUser: builder.mutation<IUserState, LoginInput>({
+        createProject: builder.mutation({
             query(data) {
+                const user = JSON.parse(localStorage.getItem('user'))
+                data['author'] = user.id
+                console.log(data)
                 return {
-                    url: 'login',
+                    url: 'project',
                     method: 'POST',
                     body: data,
                 }
-            },
-            async onQueryStarted(args, { dispatch, queryFulfilled }) {
-                try {
-                    const { data } = await queryFulfilled;
-                    dispatch(setUser(data));
-                } catch (error) {
-                    console.log(error)
-                }
-            },
+            }
         }),
     })
 })
 
 export const {
-    useLoginUserMutation,
+    useCreateProjectMutation,
     useGetAllProjectsQuery,
 } = projectsApi;

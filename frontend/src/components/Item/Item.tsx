@@ -14,7 +14,7 @@ export const Item = ({ item }) => {
 		>
 			<Meta title={item.name} />
 			Автор: {item.author}<br />
-			Квота: {item.workers}<br /><br />
+			Квота: 0/{item.workers}<br /><br />
 			<Button style={{ width: "100%" }} type="primary" onClick={() => setModalOpen(true)}>
 				Открыть
 			</Button>
@@ -29,8 +29,8 @@ export const Item = ({ item }) => {
 		>
 			<Divider />
 			<p>Автор проекта: {item.author}</p>
-			<p>Квота людей: {item.workers}</p>
-			<p>Средняя оценка экспертов: {item.rating}</p>
+			<p>Квота людей: 0/{item.workers}</p>
+			<p>Средняя оценка экспертов: </p>
 			<p>Описание проекта: {item.description}</p>
 			тут еще юзеры проекта будут
 			<Row gutter={16} justify={"space-between"}>
