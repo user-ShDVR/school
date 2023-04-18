@@ -6,15 +6,15 @@ class TypeController {
     async create(req, res, next) {
 
         let { name, description, userId, workers } = req.body
-        const meme = await Contests.findOne({ where: { name } })
-        if (meme) {
+        const isExists = await Contests.findOne({ where: { name } })
+        if (isExists) {
             return next(ApiError.badRequest('Проект с таким именем уже существует'))
         }
 
-        const cont = await Contests.create({ name, description, workers });
+        const contest = await Contests.create({ name, description, workers });
         const user = await Users.findAll({ where: { id: userId } });
-        await cont.addUsers(user);
-        return res.json(cont)
+        await contest.addUsers(user);
+        return res.json(contest)
 
     }
 
@@ -40,24 +40,14 @@ class TypeController {
 
     async add_user(req, res) {
 
-        let { name, id_user } = req.body;
-        const resu = await Contests.findOne({ where: { name: name } });
-        if (resu) {
-
-            let obj = JSON.parse(resu.users);
-            let ne = Object.keys(obj).length;
-
-            if (Object.values(obj).includes(id_user)) {
-
-                return res.json("Юзер уже в проекте");
-
-            }
-
-            obj[ne] = id_user;
-
-            const al = await Contests.update({ users: JSON.stringify(obj) }, { where: { name: name } });
-            return res.json(al);
-
+        let { id_user, id_contest } = req.body;
+        const user = await Users.findAll({ where: { id: id_user } });
+        const contest = await Contests.findOne({ where: { id: id_contest } });
+        if (user && contest) {
+            await contest.addUsers(user);
+            return res.json(contest)
+        } else {
+            return next(ApiError.badRequest('Такого пользователя или проекта не существует'))
         }
     }
 
