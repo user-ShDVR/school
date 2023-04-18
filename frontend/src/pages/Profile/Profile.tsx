@@ -143,46 +143,6 @@ const data1 = [
 	  "user": "Фактическое исполнение",
 	  "score": 60
 	},
-	{
-	  "item": "Показатель 4",
-	  "user": "Обязательства",
-	  "score": 40
-	},
-	{
-	  "item": "Показатель 4",
-	  "user": "Фактическое исполнение",
-	  "score": 50
-	},
-	{
-	  "item": "Показатель 5",
-	  "user": "Обязательства",
-	  "score": 60
-	},
-	{
-	  "item": "Показатель 5",
-	  "user": "Фактическое исполнение",
-	  "score": 70
-	},
-	{
-	  "item": "Показатель 6",
-	  "user": "Обязательства",
-	  "score": 70
-	},
-	{
-	  "item": "Показатель 6",
-	  "user": "Фактическое исполнение",
-	  "score": 50
-	},
-	{
-	  "item": "Показатель 7",
-	  "user": "Обязательства",
-	  "score": 50
-	},
-	{
-	  "item": "Показатель 7",
-	  "user": "Фактическое исполнение",
-	  "score": 40
-	},
   ]
 
 const config = {
@@ -248,8 +208,8 @@ export const Profile: FC = (props) => {
 					label: 'Информация',
 					key: '1',
 					children: <Card title={user.name} extra={<><Button type="primary">Редактировать</Button> <Button onClick={onLogout} type="dashed">Выйти</Button></>} bordered={true} style={{ width: "100%", marginBottom: "32px" }}>
-						<Paragraph>Права пользователя: Директор</Paragraph>
-						<Paragraph>Должность: {user.role}</Paragraph>
+						<Paragraph>Права пользователя: {user.role}</Paragraph>
+						{/* <Paragraph>Должность: </Paragraph> */}
 						<Paragraph>О себе: Если ты всегда будешь делать завтрашнюю работу сегодня, то последний день твоей жизни будет совершенно свободным. </Paragraph>
 					</Card>,
 				},

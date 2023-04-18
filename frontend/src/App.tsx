@@ -27,7 +27,7 @@ const App: React.FC = () => {
       <Layout style={{ height: '100vh', overflow: 'scroll' }} className="layout">
         <HeaderComponent />
         <Layout>
-          <Content style={{ padding: '40px 30px', display: "flex", justifyContent: "center" }}>
+          <Content style={{ padding: '20px 30px', display: "flex", justifyContent: "center" }}>
             <Routes>
               <Route path='/' element={<Login />} />
               <Route path="register" element={<Register />} />

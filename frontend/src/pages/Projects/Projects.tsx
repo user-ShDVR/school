@@ -27,6 +27,7 @@ export const Projects = () => {
 		console.log(values)
 		createProject(values)
 		setModalOpen(false)
+		refetch()
 	};
 
 	React.useEffect(()=>{
@@ -34,7 +35,7 @@ export const Projects = () => {
 		 toast.error((error as any).data.message)
 		}
 	   },[isError])
-	return <div style={{ maxWidth: 1024 }}>
+	return <div style={{ maxWidth: 1024}}>
 		<Row justify="center" gutter={[24, 24]}>
 			{isSuccess ?
 				data.rows.map((item) => {
@@ -92,7 +93,10 @@ export const Projects = () => {
 					</Form.Item>
 				</Form>
 			</Modal>
-			<Pagination defaultPageSize={8} pageSize={8} showSizeChanger={false} current={current} onChange={onChange} total={isSuccess ? data.count : 0} />
 		</Row>
+		<Row justify="center" style={{marginTop: "8px"}}>
+		<Pagination defaultPageSize={8} pageSize={8} showSizeChanger={false} current={current} onChange={onChange} total={isSuccess ? data.count : 0} />
+		</Row>
+		
 	</div>;
 };
