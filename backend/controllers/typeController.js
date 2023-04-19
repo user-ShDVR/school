@@ -1,4 +1,4 @@
-const { Users, Contests } = require('../models/models')
+const { Users, Contests, Rating } = require('../models/models')
 const ApiError = require('../error/ApiError');
 
 
@@ -14,7 +14,7 @@ class TypeController {
         const contest = await Contests.create({ name, description, workers });
         const user = await Users.findAll({ where: { id: userId } });
         await contest.addUsers(user);
-        return res.json(contest)
+        return res.json(contest)  //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Проект успешно создан')
 
     }
 
@@ -25,8 +25,8 @@ class TypeController {
         limit = limit || 8;
         let offset = page * limit - limit;
         const types = await Contests.findAndCountAll({
-            limit: +limit,
-            offset: +offset,
+            limit: limit,
+            offset: offset,
             include: [{
                 model: Users,
                 as: 'users',
@@ -40,15 +40,51 @@ class TypeController {
 
     async add_user(req, res) {
 
-        let { id_user, id_contest } = req.body;
-        const user = await Users.findAll({ where: { id: id_user } });
-        const contest = await Contests.findOne({ where: { id: id_contest } });
+        let { userId, contestId } = req.body;
+        const user = await Users.findAll({ where: { id: userId } });
+        const contest = await Contests.findOne({ where: { id: contestId } });
         if (user && contest) {
             await contest.addUsers(user);
-            return res.json(contest)
+            return res.json(contest) //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Пользователь успешно добавлен')
         } else {
             return next(ApiError.badRequest('Такого пользователя или проекта не существует'))
         }
+    }
+
+    async createRate(req, res, next) {
+
+        const { contestId, rate, userId } = req.body
+        let rated;
+        const contest = await Contests.findByPk(contestId)
+        if (!contest) {
+            throw new Error('Товар не найден в БД')
+        }
+        const user = await Users.findByPk(userId)
+        if (!user) {
+            throw new Error('Пользователь не найден в БД')
+        }
+        const rating = await Rating.create({userId: userId, contestsId: contestId, rate})
+        const votes = await Rating.count({where: {contestsId: contestId}})
+        if (votes) {
+            const rates = await Rating.sum('rate', {where: {contestsId: contestId}})
+            rated = {rates, votes, rating: rates/votes}
+            const updateContest = await Contests.update({ rating: rated }, {
+                where: {
+                    id: contestId
+                }
+              })
+              res.json(updateContest)
+        } else {
+            rated = {rates: 0, votes: 0, rating: 0}
+            const updateContest = await Contests.update({ rating }, {
+                where: {
+                    id: contestId
+                }
+              })
+              res.json(updateContest)
+        }
+        
+
     }
 
 }
