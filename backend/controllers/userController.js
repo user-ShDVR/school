@@ -1,7 +1,7 @@
 const ApiError = require('../error/ApiError');
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const {User, Contests} = require('../models/models')
+const {Users, Contests} = require('../models/models')
 const uuid = require('uuid')
 const path = require('path');
 
@@ -27,7 +27,7 @@ class UserController {
 
         }
 
-        const candidate = await User.findOne({where: {email}})
+        const candidate = await Users.findOne({where: {email}})
 
         if (candidate) {
 
@@ -40,7 +40,7 @@ class UserController {
         //let fileName = uuid.v4() + ".jpg"
         //img.mv(path.resolve(__dirname, '..', 'avs', fileName))
 
-        const user = await User.create({email, password: hashPassword, role, name})
+        const user = await Users.create({email, password: hashPassword, role, name})
 
         const token = generateJwt(user.id, user.email, user.role)
         return res.json({token})
@@ -53,7 +53,7 @@ class UserController {
         if (email) {
 
         
-        const user = await User.findOne({where: {email}})
+        const user = await Users.findOne({where: {email}})
         
         if(email && password){
             if (!user) {
@@ -77,6 +77,7 @@ class UserController {
         else {
             return res.json("Данные не введены");
         }
+        
     }
 
     async check(req, res, next) {
@@ -89,15 +90,66 @@ class UserController {
     async change_role(req, res){
 
         let {email, new_role} = req.body;
-        const candidate = await User.findOne({where: {email}})
+        const candidate = await Users.findOne({where: {email}})
 
         if (candidate) {
 
-            const al = await User.update({role: new_role}, {where:{email: email}});
+            const al = await Users.update({role: new_role}, {where:{email: email}});
             return res.json({al})
 
         }
         return res.json("Ошибка, email не найден")
+
+    }
+
+    async change_inf_user(req, res) {
+
+        let {id, new_data} = req.body;
+
+        try {
+
+          const ok = await Users.findByPk(id);
+
+          if (!ok) {
+
+            return res.json("Юзер не найден")
+
+          }
+      
+          await ok.update(new_data);
+
+          return res.json("Инфа обновлена")
+
+        } catch (e) {
+
+            return res.json("Ошибка епт")
+
+        }
+
+      }
+
+    async del_user(req, res){
+
+        let {id} = req.body;
+
+        try {
+            const user = await Users.findByPk(id);
+            if (user) {
+        
+                await user.destroy();
+                return res.json("Успешно удален")
+
+        
+            } else {
+        
+                return res.json("Блеа ошибка")
+
+            }
+        } catch (err) {
+
+            return res.json("Блеа ошибка")
+            
+        }
 
     }
 

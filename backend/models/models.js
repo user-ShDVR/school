@@ -22,6 +22,7 @@ const Users = sequelize.define('users', {
   },
   name: {
     type: DataTypes.STRING
+
   }
 });
 
@@ -49,8 +50,9 @@ const Contests = sequelize.define('Contests', {
 });
 
 const Rating = sequelize.define('rating', {
-  rate: { 
-    type: DataTypes.INTEGER, 
+
+  rate: {
+    type: DataTypes.INTEGER,
     allowNull: false },
   userId: {
     type: DataTypes.INTEGER,
@@ -60,6 +62,7 @@ const Rating = sequelize.define('rating', {
       key: 'id'
     }
   },
+
   contestsId: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -71,19 +74,43 @@ const Rating = sequelize.define('rating', {
 })
 
 
-const Tasks = sequelize.define('tasks', {
+const Tasks = sequelize.define('Tasks', {
 
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   name: { type: DataTypes.STRING },
   description: { type: DataTypes.STRING },
-  photo: { type: DataTypes.STRING, allowNull: false },
-  author: { type: DataTypes.INTEGER },
-  users: { type: DataTypes.JSON, defaultValue: "{ }" },
-  rating: { type: DataTypes.JSON, defaultValue: "{ }" },
-  typ: { type: DataTypes.STRING },
-  stop: { type: DataTypes.STRING }
+  typ: {
+    type: DataTypes.ENUM('INVAR', 'VAR'),
+    defaultValue: 'VAR'
+  },
+  stop: { type: DataTypes.STRING } //изменить на дату
 
 })
+
+
+const TaskUser = sequelize.define('TaskUser', {
+  predicted: {
+    type: DataTypes.INTEGER,
+    allowNull: false },
+  rate: {
+    type: DataTypes.INTEGER },
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'users',
+      key: 'id'
+    }
+  },
+  TasksId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Tasks',
+      key: 'id'
+    }
+  }
+});
 
 const ContestUser = sequelize.define('ContestUser', {
   userId: {
@@ -114,6 +141,7 @@ Contests.belongsToMany(Users, {
   as: 'users',
   foreignKey: 'contestsId'
 });
+
 // связь many-to-many товаров и пользователей через промежуточную таблицу rating;
 // за один товар могут проголосовать несколько зарегистрированных пользователей,
 // один пользователь может проголосовать за несколько товаров
@@ -130,13 +158,31 @@ Contests.belongsToMany(Users, {
 });
 
 
+
+
+Users.belongsToMany(Tasks, {
+  through: 'TaskUser',
+  as: 'Tasks',
+  foreignKey: 'userId'
+});
+
+Tasks.belongsToMany(Users, {
+  through: 'TaskUser',
+  as: 'users',
+  foreignKey: 'TasksId'
+});
+
+
+
+
 module.exports = {
 
   Users,
   Contests,
   Tasks,
   ContestUser,
-  Rating
+  Rating,
+  TaskUser,
 
 }
 

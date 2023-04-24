@@ -1,6 +1,6 @@
 import avatar from "../../assets/Avatar.png";
-import { Button, Card, Col, Divider, Modal, Row } from 'antd';
-import { ProjectTwoTone } from '@ant-design/icons'
+import { Avatar, Button, Card, Col, Divider, List, Modal, Row } from 'antd';
+import { ProjectTwoTone, UserOutlined } from '@ant-design/icons'
 import { Link } from "react-router-dom";
 import { useState } from "react";
 const { Meta } = Card;
@@ -8,13 +8,14 @@ const { Meta } = Card;
 export const Item = ({ item }) => {
 	const [modalOpen, setModalOpen] = useState(false);
 	return <>
+
 		<Card
-			style={{ maxWidth: 240 }}
+			style={{ width: 240 }}
 			cover={<ProjectTwoTone style={{ fontSize: '230px', color: '#08c' }} />}
 		>
 			<Meta title={item.name} />
-			Автор: {item.author}<br />
-			Квота: 0/{item.workers}<br /><br />
+			Автор: {item.users[0].name}<br />
+			Квота: {item.users.length}/{item.workers}<br /><br />
 			<Button style={{ width: "100%" }} type="primary" onClick={() => setModalOpen(true)}>
 				Открыть
 			</Button>
@@ -28,11 +29,25 @@ export const Item = ({ item }) => {
 			onCancel={() => setModalOpen(false)}
 		>
 			<Divider />
-			<p>Автор проекта: {item.author}</p>
-			<p>Квота людей: 0/{item.workers}</p>
+			<p>Автор проекта: {item.users[0].name}</p>
+			<p>Квота людей: {item.users.length}/{item.workers}</p>
 			<p>Средняя оценка экспертов: </p>
 			<p>Описание проекта: {item.description}</p>
-			тут еще юзеры проекта будут
+			<p>Пользователи находящиеся в проекте:</p>
+			<List
+        dataSource={item.users}
+        renderItem={(item: {id: number, name: string, }, index) => (
+          <List.Item>
+            <List.Item.Meta
+              avatar={
+                <Avatar shape="square" icon={<UserOutlined />} />
+              }
+              title={<a target="_blank" href="mailto:name@gmail.com">{item.name}</a>}
+              description="???"
+            />
+          </List.Item>
+        )}
+      />
 			<Row gutter={16} justify={"space-between"}>
 				<Col flex="auto"><Button style={{ width: "100%" }} type="primary" onClick={() => setModalOpen(true)}>
 					Присоединится

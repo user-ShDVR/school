@@ -1,4 +1,4 @@
-const {Tasks, Likes} = require('../models/models');
+const {Tasks, Users, TaskUser} = require('../models/models');
 const ApiError = require('../error/ApiError');
 const uuid = require('uuid');
 const path = require('path');
@@ -6,28 +6,22 @@ const path = require('path');
 class TasksController {
 
     async create(req, res, next) {
-        
-        let { name, description, author, rating } = req.body;
-        const { img } = req.files;
-        
 
-        const meme = await Tasks.findOne({where: {name}})
+            let { name, description, typ, userId, stop } = req.body;
+            const isExists = await Tasks.findOne({ where: { name } });
 
-        if (meme) {
+            if (isExists) {
 
-            return next(ApiError.badRequest('Задача с таким именем уже существует'))
+                return next(ApiError.badRequest('Проект с таким именем уже существует'));
+
+            }
+
+            const task = await Tasks.create({ name, description, typ, stop });
+            const user = await Users.findAll({ where: { id: userId } });
+            await task.addUsers(user);
+            return res.json(task);  //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Проект успешно создан')
 
         }
-
-
-        let fileName = uuid.v4() + ".jpg";
-        img.mv(path.resolve(__dirname, '..', 'task', fileName));
-        
-        const cont = await Tasks.create({ name, description, photo: fileName, author, rating });
-
-        return res.json(cont);
-        
-    }
 
 
     async getAll(req, res) {
@@ -35,12 +29,21 @@ class TasksController {
         let { limit, page } = req.query;
         page = page || 1;
         limit = limit || 8;
-
-        //offset - отступ
         let offset = page * limit - limit;
+        const tasks = await Tasks.findAndCountAll({
+            limit: limit,
+            offset: offset,
+            include: [{
+                model: Users,
+                as: 'users',
+                required: false,
+                attributes: ['id', 'name'],
+                through: { attributes: ['predicted', 'rate'] }
+            }],
+        });
 
-        const types = await Tasks.findAndCountAll({limit, offset})
-        return res.json(types)
+        return res.json(tasks)
+
     }
 
     async add_like(req, res){
@@ -76,36 +79,61 @@ class TasksController {
     }
 
     async add_user(req, res){
-
-        let {name, id_user, proc} = req.body;
-        const resu = await Tasks.findOne({where: {name: name}});
-        //console.log(resu)
-        if(resu){
-            
-            let obj = JSON.parse(resu.users);
-            let ne = Object.keys(obj).length;
+        let { userId, taskId, predict } = req.body;
+        
+        const user = await Users.findOne({ where: { id: userId } });
+        const task = await Tasks.findOne({ where: { id: taskId } });
 
 
-            if( Object.keys(obj).includes(id_user) ) {
+        if (user && task) {
+            task.addUsers(user, { through: { predicted: predict } })
+            return res.json(task) //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Пользователь успешно добавлен')
 
-                return res.json("Юзер уже в задаче");
-            
-            }
-
-            obj[id_user] = proc;
-            
-            const al = await Tasks.update({users: JSON.stringify(obj)}, {where:{name: name}});
-            return res.json(al);
-            
+        } else {
+            return next(ApiError.badRequest('Такого пользователя или проекта не существует'))
         }
 
     }
 
+    async createRate(req, res){
+        let { userId, taskId, rate } = req.body;
+        const task1= await Tasks.findByPk(taskId)
+        
+        if (!task1) {
+
+            return res.json('task не найден в БД')
+        }
+        const user1 = await Users.findByPk(userId)
+        if (!user1) {
+            
+            return res.json('User не найден в БД')
+        }
+        const user = await Users.findOne({ where: { id: userId } });
+        const task = await Tasks.findOne({ where: { id: taskId } });
+
+
+        if (user && task) {
+
+            //const taskUser = await TaskUser.findOne({ where: { userId, taskId } }) из вот этой функи достаем это -> {rates: 0, votes: 0, rating: 0}
+            // rates + rate
+            // votes + 1
+            // rating = rates/votes
+            // update {rates: 5, votes: 1, rating: 5}
+            //const rating = await TaskRating.create({userId: userId, TasksId: taskId, predicted: predict})
+            //const tu = await TaskUser.create({taskId, userId})
+            task.addUsers(user, { through: { predicted: predict } })
+
+            return res.json(task) //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Пользователь успешно добавлен')
+
+        } else {
+
+            return next(ApiError.badRequest('Такого пользователя или проекта не существует'))
+
+        }
+
+    }
 
 }
-
 //сразу указывает сколько сделает
 //админ только создает задачу, а юзеры сами выбирают сколько сделают в цифрах
-
-
 module.exports = new TasksController()

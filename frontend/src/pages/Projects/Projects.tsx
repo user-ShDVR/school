@@ -18,7 +18,6 @@ export const Projects = () => {
 	const [api, contextHolder] = notification.useNotification();
 	const { data, isSuccess, refetch } = useGetAllProjectsQuery({ limit: '8', page: `${current}` })
 	const [createProject, { isError, error }] = useCreateProjectMutation();
-	console.log(data)
 	const onChange = (page) => {
 		setCurrent(page);
 		refetch()
@@ -36,11 +35,11 @@ export const Projects = () => {
 		}
 	   },[isError])
 	return <div style={{ maxWidth: 1024}}>
-		<Row justify="center" gutter={[24, 24]}>
+		<Row justify="space-around" style={{ width: "100%" }} gutter={[16, 16]}>
 			{isSuccess ?
 				data.rows.map((item) => {
 					return (
-						<Col key={item.name} style={{ display: 'flex', justifyContent: 'center' }} xs={16} sm={12} md={8} lg={6} xl={6} >
+						<Col style={{ width: "320px" }} key={item.name}  xs={{span: 16}} sm={{span: 12}} md={{span: 8}} lg={{span: 6}} xl={{span: 6}} >
 							<Item key={item.id} item={item} />
 						</Col>
 					);

@@ -3,20 +3,24 @@ const ApiError = require('../error/ApiError');
 
 
 class TypeController {
+
     async create(req, res, next) {
 
         let { name, description, userId, workers } = req.body
         const isExists = await Contests.findOne({ where: { name } })
+
         if (isExists) {
             return next(ApiError.badRequest('Проект с таким именем уже существует'))
         }
 
         const contest = await Contests.create({ name, description, workers });
         const user = await Users.findAll({ where: { id: userId } });
+
         await contest.addUsers(user);
-        return res.json(contest)  //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Проект успешно создан')
+        return res.json(contest);  //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Проект успешно создан')
 
     }
+    
 
     async getAll(req, res) {
 
@@ -28,26 +32,36 @@ class TypeController {
             limit: limit,
             offset: offset,
             include: [{
+
                 model: Users,
                 as: 'users',
                 required: false,
                 attributes: ['id', 'name'],
                 through: { attributes: [] }
+
             }],
         });
+
         return res.json(types)
+
     }
 
     async add_user(req, res) {
 
+        //сюда еще предикт
         let { userId, contestId } = req.body;
         const user = await Users.findAll({ where: { id: userId } });
         const contest = await Contests.findOne({ where: { id: contestId } });
+
         if (user && contest) {
+
             await contest.addUsers(user);
             return res.json(contest) //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Пользователь успешно добавлен')
+
         } else {
+
             return next(ApiError.badRequest('Такого пользователя или проекта не существует'))
+
         }
     }
 
@@ -56,6 +70,7 @@ class TypeController {
         const { contestId, rate, userId } = req.body
         let rated;
         const contest = await Contests.findByPk(contestId)
+
         if (!contest) {
             throw new Error('Товар не найден в БД')
         }
@@ -83,7 +98,6 @@ class TypeController {
               })
               res.json(updateContest)
         }
-        
 
     }
 
