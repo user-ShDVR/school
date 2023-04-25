@@ -15,7 +15,7 @@ const loginSchema = object({
 		.email('Email Address is invalid'),
 	password: string()
 		.min(1, 'Password is required')
-		.min(8, 'Password must be more than 8 characters')
+		.min(6, 'Password must be more than 8 characters')
 		.max(32, 'Password must be less than 32 characters'),
 });
 
@@ -45,7 +45,7 @@ export const Login: FC = () => {
 
 	React.useEffect(() => {
 		if (isSuccess) {
-		  toast.success('You successfully logged in');
+		  toast.success('Вы успешно вошли!');
 		  navigate(from);		  
 		}
 		if (isError) {

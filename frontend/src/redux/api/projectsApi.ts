@@ -14,7 +14,7 @@ export const projectsApi = createApi({
     endpoints: (builder) => ({
         getAllProjects: builder.query<any, { limit: string; page: string }>({
             query(arg) {
-                const { limit, page } = arg
+                const { limit, page } = arg;
                 return {
                     url: 'get_all_project',
                     params: { limit, page },
@@ -24,7 +24,7 @@ export const projectsApi = createApi({
         createProject: builder.mutation({
             query(data) {
                 const user = JSON.parse(localStorage.getItem('user'))
-                data['userId'] = user.user.id
+                data['userId'] = user.user.id;
                 return {
                     url: 'project',
                     method: 'POST',
@@ -35,8 +35,7 @@ export const projectsApi = createApi({
         addUser: builder.mutation({
             query(data) {
                 const user = JSON.parse(localStorage.getItem('user'))
-                data['userId'] = user.user.id
-                console.log(data)
+                data['userId'] = user.user.id;
                 return {
                     url: 'add_user_in_project',
                     method: 'POST',

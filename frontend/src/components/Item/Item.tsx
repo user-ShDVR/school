@@ -3,10 +3,16 @@ import { Avatar, Button, Card, Col, Divider, List, Modal, Row } from 'antd';
 import { ProjectTwoTone, UserOutlined } from '@ant-design/icons'
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useAddUserMutation } from "../../redux/api/projectsApi";
 const { Meta } = Card;
 
-export const Item = ({ item }) => {
+export const Item = ({ item, refetch }) => {
+	const [addUser, { isError, error }] = useAddUserMutation();
 	const [modalOpen, setModalOpen] = useState(false);
+	const onClick = (contentId: string) => {
+		addUser({contentId})
+		refetch()
+	};
 	return <>
 
 		<Card
@@ -49,7 +55,7 @@ export const Item = ({ item }) => {
         )}
       />
 			<Row gutter={16} justify={"space-between"}>
-				<Col flex="auto"><Button style={{ width: "100%" }} type="primary" onClick={() => setModalOpen(true)}>
+				<Col flex="auto"><Button style={{ width: "100%" }} type="primary" onClick={() => onClick(item.id)}>
 					Присоединится
 				</Button></Col>
 				<Col flex="auto"></Col>

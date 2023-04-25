@@ -79,10 +79,10 @@ class TasksController {
     }
 
     async add_user(req, res){
-        let { userId, taskId, predict } = req.body;
+        let { userId, contentId, predict } = req.body;
         
         const user = await Users.findOne({ where: { id: userId } });
-        const task = await Tasks.findOne({ where: { id: taskId } });
+        const task = await Tasks.findOne({ where: { id: contentId } });
 
 
         if (user && task) {

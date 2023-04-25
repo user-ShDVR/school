@@ -40,7 +40,7 @@ export const Projects = () => {
 				data.rows.map((item) => {
 					return (
 						<Col style={{ width: "320px" }} key={item.name}  xs={{span: 16}} sm={{span: 12}} md={{span: 8}} lg={{span: 6}} xl={{span: 6}} >
-							<Item key={item.id} item={item} />
+							<Item key={item.id} item={item} refetch={refetch} />
 						</Col>
 					);
 				}) :

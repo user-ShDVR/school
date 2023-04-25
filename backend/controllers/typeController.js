@@ -23,7 +23,6 @@ class TypeController {
     
 
     async getAll(req, res) {
-
         let { limit, page } = req.query;
         page = page || 1;
         limit = limit || 8;
@@ -31,27 +30,25 @@ class TypeController {
         const types = await Contests.findAndCountAll({
             limit: limit,
             offset: offset,
+            distinct: true,
             include: [{
 
                 model: Users,
                 as: 'users',
                 required: false,
-                attributes: ['id', 'name'],
+                attributes: ['id', 'name','email' ],
                 through: { attributes: [] }
 
             }],
         });
-
         return res.json(types)
-
     }
 
     async add_user(req, res) {
 
-        //сюда еще предикт
-        let { userId, contestId } = req.body;
+        let { userId, contentId } = req.body;
         const user = await Users.findAll({ where: { id: userId } });
-        const contest = await Contests.findOne({ where: { id: contestId } });
+        const contest = await Contests.findOne({ where: { id: contentId } });
 
         if (user && contest) {
 
