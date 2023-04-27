@@ -1,32 +1,115 @@
-import { Button, Card, Col, List, Row } from "antd";
+import { Button, Col, DatePicker, FloatButton, Form, Input, InputNumber, Modal, Pagination, PaginationProps, Row, Select, notification } from "antd";
 import { Item } from "../../components/Item";
-import Meta from "antd/es/card/Meta";
-import { ProjectTwoTone } from '@ant-design/icons'
+import { useCreateProjectMutation, useGetAllProjectsQuery } from "../../redux/api/projectsApi";
+import { PlusOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from "react";
+import TextArea from "antd/es/input/TextArea";
+import { NotificationPlacement } from "antd/es/notification/interface";
+import { toast } from "react-toastify";
 
 
-const InfoArray = [
-	{ id: 1, name: 'Задача 1', author: 1, workers: '1/1', rating: '5.3', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce feugiat magna ipsum. Duis vel est tellus. Proin rutrum, ipsum a aliquam tempor, metus elit dictum sem, et feugiat nisl sapien eu mauris. Pellentesque et hendrerit diam, convallis fermentum risus. Quisque et elit pellentesque, lobortis nisl ac, aliquam ante. Praesent eu pulvinar tellus. Sed mi neque, imperdiet quis odio sed, convallis varius nibh. Donec sit amet egestas massa, et ultrices massa. Duis tempor quam ac dapibus pellentesque. Duis metus eros, maximus et tempus condimentum, vulputate fringilla velit. Sed elementum risus in libero venenatis, non eleifend est congue. Etiam fermentum augue eget posuere tristique. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce feugiat magna ipsum. Duis vel est tellus. Proin rutrum, ipsum a aliquam tempor, metus elit dictum sem, et feugiat nisl sapien eu mauris. Pellentesque et hendrerit diam, convallis fermentum risus. Quisque et elit pellentesque, lobortis nisl ac, aliquam ante. Praesent eu pulvinar tellus. Sed mi neque, imperdiet quis odio sed, convallis varius nibh. Donec sit amet egestas massa, et ultrices massa. ' },
-	{ id: 2, name: 'Задача 2', author: 2, workers: '2/2', rating: '5.3', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce feugiat magna ipsum. Duis vel est tellus. Proin rutrum, ipsum a aliquam tempor, metus elit dictum sem, et feugiat nisl sapien eu mauris. Pellentesque et hendrerit diam, convallis fermentum risus. Quisque et elit pellentesque, lobortis nisl ac, aliquam ante. Praesent eu pulvinar tellus. Sed mi neque, imperdiet quis odio sed, convallis varius nibh. Donec sit amet egestas massa, et ultrices massa. Duis tempor quam ac dapibus pellentesque. Duis metus eros, maximus et tempus condimentum, vulputate fringilla velit. Sed elementum risus in libero venenatis, non eleifend est congue. Etiam fermentum augue eget posuere tristique. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce feugiat magna ipsum. Duis vel est tellus. Proin rutrum, ipsum a aliquam tempor, metus elit dictum sem, et feugiat nisl sapien eu mauris. Pellentesque et hendrerit diam, convallis fermentum risus. Quisque et elit pellentesque, lobortis nisl ac, aliquam ante. Praesent eu pulvinar tellus. Sed mi neque, imperdiet quis odio sed, convallis varius nibh. Donec sit amet egestas massa, et ultrices massa. '  },
-	
-]
+
+
 export const Tasks = () => {
-	return <div >
-		<List size="default"
-    grid={{
-      gutter: 16,
-      xs: 1,
-      sm: 2,
-      md: 8,
-      lg: 8,
-      xl: 6,
-      xxl: 6,
-    }}
-    dataSource={InfoArray}
-    renderItem={(item) => (
-      <List.Item style={{ width: "100%" }}>
-        <Card  title={item.name}>Card content</Card>
-      </List.Item>
-    )}
-  />
+
+	const [modalOpen, setModalOpen] = useState(false);
+	const [current, setCurrent] = useState(1);
+	const [form] = Form.useForm();
+	const [api, contextHolder] = notification.useNotification();
+	const { data, isSuccess, refetch } = useGetAllProjectsQuery({ limit: '8', page: `${current}` })
+	const [createProject, { isError, error }] = useCreateProjectMutation();
+	const onChange = (page) => {
+		setCurrent(page);
+		refetch()
+	};
+	const onFinishModal = (values: any) => {
+		console.log(values)
+		createProject(values)
+		setModalOpen(false)
+		refetch()
+	};
+
+	React.useEffect(()=>{
+		if (isError) {
+		 toast.error((error as any).data.message)
+		}
+	   },[isError])
+	return <div style={{ maxWidth: 1024}}>
+		<Row justify="space-around" style={{ width: "100%" }} gutter={[16, 16]}>
+			{isSuccess ?
+				data.rows.map((item) => {
+					return (
+						<Col style={{ width: "320px" }} key={item.name}  xs={{span: 16}} sm={{span: 12}} md={{span: 8}} lg={{span: 6}} xl={{span: 6}} >
+							<Item key={item.id} item={item} refetch={refetch} />
+						</Col>
+					);
+				}) :
+				null}
+
+			<FloatButton
+				icon={<PlusOutlined />}
+				shape="circle"
+				tooltip={<div>Создать проект</div>}
+				onClick={() => setModalOpen(true)}
+			/>
+			<Modal
+				width={1024}
+				title="Создание проекта"
+				centered
+				open={modalOpen}
+				footer={null}
+				onCancel={() => setModalOpen(false)}
+			>
+
+				<Form
+					form={form}
+					layout="vertical"
+					onFinish={onFinishModal}
+				>
+					<Form.Item label="Название проекта:" name="name" rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]} >
+						<Input />
+					</Form.Item>
+					<Form.Item label="Квота:" name="workers" rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]} >
+						<InputNumber
+							min={1}
+							max={100}
+							formatter={(value) => `0/${value}`}
+						/>
+					</Form.Item>
+
+          <Form.Item label="Дата окончания:" name="stop" rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]} >
+          <DatePicker />
+					</Form.Item>  
+
+          <Form.Item label="Тип задачи:" name="typ" rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]} >
+          <Select
+      defaultValue="VAR"
+      options={[
+        { value: 'INVAR', label: 'Инвариантная задача' },
+        { value: 'VAR', label: 'Вариативная задача' },
+      ]}
+    />
+					</Form.Item>
+
+					<Form.Item
+						label="Описание проекта:"
+						name="description"
+						rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]}
+					>
+						<TextArea
+
+							autoSize={{ minRows: 4, maxRows: 8 }}
+						/>
+					</Form.Item>
+					<Form.Item>
+						<Button htmlType="submit" type="primary">Создать</Button>
+					</Form.Item>
+				</Form>
+			</Modal>
+		</Row>
+		<Row justify="center" style={{marginTop: "8px"}}>
+		<Pagination defaultPageSize={8} pageSize={8} showSizeChanger={false} current={current} onChange={onChange} total={isSuccess ? data.count : 0} />
+		</Row>
+		
 	</div>;
 };
