@@ -98,6 +98,24 @@ class TypeController {
 
     }
 
+    async getUserProjects(req, res) {
+        let { userId } = req.query;
+        const types = await Users.findByPk(userId,{
+            distinct: true,
+            attributes: [],
+            include: [{
+
+                model: Contests,
+                as: 'Contests',
+                required: false,
+                attributes: ['id', 'name' ],
+                through: { attributes: [] }
+
+            }],
+        });
+        return res.json(types)
+    }
+
 }
 
 module.exports = new TypeController()

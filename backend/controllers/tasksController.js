@@ -18,7 +18,7 @@ class TasksController {
 
             const task = await Tasks.create({ name, description, typ, stop });
             const user = await Users.findAll({ where: { id: userId } });
-            await task.addUsers(user);
+            await task.addUsers(user); //task.addUsers(user, { through: { author: true } })
             return res.json(task);  //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Проект успешно создан')
 
         }
