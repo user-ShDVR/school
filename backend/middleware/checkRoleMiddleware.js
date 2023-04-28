@@ -14,8 +14,9 @@ module.exports = function(role) {
             } 
             const decoded = jwt.verify(token, process.env.SECRET_KEY)
             const user = await Users.findAll({ where: { id: decoded.id } });
-            
-            if (user.role !== role) {
+
+
+            if (user[0].role !== role) {
                 return res.status(403).json({message: "Нет доступа"})
             }
             req.user = decoded;

@@ -11,5 +11,7 @@ router.post('/change_role', checkRole('ADMIN'),userController.change_role)
 router.post('/change_inf_user', checkRole('ADMIN'), userController.change_inf_user)
 router.post('/del_user', checkRole('ADMIN'), userController.del_user)
 
+router.post('/refreshJWTToken', userController.refreshJWTToken)
+
 
 module.exports = router

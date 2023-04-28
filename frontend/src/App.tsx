@@ -11,16 +11,21 @@ import { Login } from './pages/Login';
 import { Profile } from './pages/Profile';
 import { Tasks } from './pages/Tasks';
 import { setUser } from './redux/features/userSlice';
+import { useRefreshUserMutation } from './redux/api/authApi';
 const { Header, Content } = Layout;
 
 
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch()
+  const [refreshUser, { isError, error }] = useRefreshUserMutation();
   const user = JSON.parse(localStorage.getItem('user') || "{}")
   React.useEffect(() => {
-    dispatch(setUser(user))
+    refreshUser({token: user.token})
   },[])
+
+  
+// const FullPizza = React.lazy(() => import(/* webpackChunkName: "FullPizza" */ './pages/FullPizza'));
   return (
     <>
 

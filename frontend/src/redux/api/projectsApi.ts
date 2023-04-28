@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { LoginInput } from '../../pages/Login';
 import { RegisterInput } from '../../pages/Register';
 import { IGenericResponse, IUserState } from './types';
+import { RootState } from '../store';
 
 
 
@@ -10,6 +11,13 @@ export const projectsApi = createApi({
     reducerPath: 'projectsApi',
     baseQuery: fetchBaseQuery({
         baseUrl: `http://localhost:5000/api/`,
+        prepareHeaders: (headers, { getState }) => {
+            const token = (getState() as RootState).userState.token;
+            if (token) {
+              headers.set('Authorization', `Bearer ${token}`);
+            }
+            return headers;
+        },
     }),
     endpoints: (builder) => ({
         getAllProjects: builder.query<any, { limit: string; page: string }>({

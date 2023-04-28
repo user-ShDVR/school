@@ -1,5 +1,5 @@
 import { Button, Col, DatePicker, FloatButton, Form, Input, InputNumber, Modal, Pagination, PaginationProps, Row, Select, notification } from "antd";
-import { Item } from "../../components/Item";
+import { TaskItem } from "../../components/TaskItem";
 import { useCreateTaskMutation, useGetAllTasksQuery } from "../../redux/api/taskApi";
 import { PlusOutlined } from '@ant-design/icons';
 import React, { useEffect, useState } from "react";
@@ -40,7 +40,7 @@ export const Tasks = () => {
 				data.rows.map((item) => {
 					return (
 						<Col style={{ width: "320px" }} key={item.name} xs={{ span: 16 }} sm={{ span: 12 }} md={{ span: 8 }} lg={{ span: 6 }} xl={{ span: 6 }} >
-							<Item key={item.id} item={item} refetch={refetch} />
+							<TaskItem key={item.id} item={item} refetch={refetch} />
 						</Col>
 					);
 				}) :

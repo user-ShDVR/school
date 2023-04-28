@@ -33,6 +33,7 @@ class TasksController {
         const tasks = await Tasks.findAndCountAll({
             limit: limit,
             offset: offset,
+            distinct: true,
             include: [{
                 model: Users,
                 as: 'users',
@@ -132,6 +133,25 @@ class TasksController {
         }
 
     }
+
+    async getUserTasks(req, res) {
+        let { userId } = req.query;
+        const types = await Users.findByPk(userId,{
+            distinct: true,
+            attributes: [],
+            include: [{
+
+                model: Tasks,
+                as: 'Tasks',
+                required: false,
+                attributes: ['id', 'name' ],
+                through: { attributes: [] }
+
+            }],
+        });
+        return res.json(types)
+    }
+
 
 }
 //сразу указывает сколько сделает

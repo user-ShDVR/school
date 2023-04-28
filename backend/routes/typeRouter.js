@@ -17,6 +17,7 @@ router.post('/add_user_in_project', typeController.add_user)
 router.post('/add_rate_in_project', typeController.createRate)
 
 router.get('/getUserProjects', typeController.getUserProjects)
+router.get('/getUserTasks', tasksController.getUserTasks)
 
 
 module.exports = router

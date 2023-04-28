@@ -9,6 +9,7 @@ const { Meta } = Card;
 export const Item = ({ item, refetch }) => {
 	const [addUser, { isError, error }] = useAddUserMutation();
 	const [modalOpen, setModalOpen] = useState(false);
+	console.log(item.name)
 	const onClick = (contentId: string) => {
 		addUser({contentId})
 		refetch()
@@ -48,7 +49,7 @@ export const Item = ({ item, refetch }) => {
               avatar={
                 <Avatar shape="square" icon={<UserOutlined />} />
               }
-              title={<a target="_blank" href="mailto:name@gmail.com">{item.name}</a>}
+              title={<a target="_blank" rel="noreferrer" href="mailto:name@gmail.com">{item.name}</a>}
               description="???"
             />
           </List.Item>

@@ -14,6 +14,7 @@ export const Projects = () => {
 
 	const [modalOpen, setModalOpen] = useState(false);
 	const [current, setCurrent] = useState(1);
+	
 	const [form] = Form.useForm();
 	const [api, contextHolder] = notification.useNotification();
 	const { data, isSuccess, refetch } = useGetAllProjectsQuery({ limit: '8', page: `${current}` })
@@ -83,7 +84,6 @@ export const Projects = () => {
 						rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]}
 					>
 						<TextArea
-
 							autoSize={{ minRows: 4, maxRows: 8 }}
 						/>
 					</Form.Item>

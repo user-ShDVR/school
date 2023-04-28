@@ -10,6 +10,13 @@ export const authApi = createApi({
     reducerPath: 'authApi',
     baseQuery: fetchBaseQuery({
         baseUrl: `http://localhost:5000/api/user/`,
+        prepareHeaders: (headers, { getState }) => {
+            const user = JSON.parse(localStorage.getItem('user'))
+            if (user.token) {
+              headers.set('Authorization', `Bearer ${user.token}`);
+            }
+            return headers;
+        },
     }),
     endpoints: (builder) => ({
         registerUser: builder.mutation<IGenericResponse, RegisterInput>({
@@ -38,6 +45,23 @@ export const authApi = createApi({
                 }
             },
         }),
+        refreshUser: builder.mutation<IUserState, { token: string; }>({
+            query(data) {
+                return {
+                    url: 'refreshJWTToken',
+                    method: 'POST',
+                    body: data,
+                };
+            },
+            async onQueryStarted(args, { dispatch, queryFulfilled }) {
+                try {
+                    const { data } = await queryFulfilled;
+                    dispatch(setUser(data));
+                } catch (error) {
+                    console.log(error)
+                }
+            },
+        }),
 
     })
 })
@@ -45,4 +69,5 @@ export const authApi = createApi({
 export const {
     useLoginUserMutation,
     useRegisterUserMutation,
+    useRefreshUserMutation,
 } = authApi;
