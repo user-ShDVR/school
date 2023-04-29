@@ -1,5 +1,5 @@
 import { Layout, Menu, theme } from 'antd';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import React from 'react';
@@ -17,12 +17,27 @@ const { Header, Content } = Layout;
 
 
 const App: React.FC = () => {
-  const dispatch = useAppDispatch()
-  const [refreshUser, { isError, error }] = useRefreshUserMutation();
+  const navigate = useNavigate();
+  const [refreshUser, {isLoading, isSuccess, isError, error }] = useRefreshUserMutation();
   const user = JSON.parse(localStorage.getItem('user') || "{}")
   React.useEffect(() => {
-    refreshUser({token: user.token})
+    if (user.token) {
+      refreshUser({token: user.token})
+    } else {
+      navigate("/")
+    }
   },[])
+
+  React.useEffect(() => {
+		if (isSuccess) {
+			navigate('profile');
+		}
+
+		if (isError) {
+		  navigate("/")
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [isLoading]);
 
   
 // const FullPizza = React.lazy(() => import(/* webpackChunkName: "FullPizza" */ './pages/FullPizza'));

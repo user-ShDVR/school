@@ -9,7 +9,6 @@ const { Meta } = Card;
 export const Item = ({ item, refetch }) => {
 	const [addUser, { isError, error }] = useAddUserMutation();
 	const [modalOpen, setModalOpen] = useState(false);
-	console.log(item.name)
 	const onClick = (contentId: string) => {
 		addUser({contentId})
 		refetch()

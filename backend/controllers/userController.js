@@ -154,31 +154,28 @@ class UserController {
     }
 
     async refreshJWTToken(req, res) {
-
-        const {token} = req.body
-
+        const { token } = req.body;
+      
         try {
-            if (!token) {
-                throw new Error('No token provided');
-            }
-            // Проверяем переданный токен на валидность и получаем из него данные
-            const expiresIn = '30d';
-            
-            const {user} = jwt.verify(token, process.env.SECRET_KEY);
-            const user1 = await Users.findOne({ where: { email: user.email } })
-            // Генерируем новый токен с новым временем жизни
-            const newToken = jwt.sign({ user }, process.env.SECRET_KEY, { expiresIn });
-
-            // Возвращаем новый токен
-            return res.json({ token: newToken, user: user1 })
-
+          if (!token) {
+            throw new Error('No token provided');
+          }
+      
+          const expiresIn = '30d';
+          const user = jwt.verify(token, process.env.SECRET_KEY);
+          console.log(user)
+          const user1 = await Users.findOne({ where: { email: user.email } });
+      
+          // Generate a new token with a new expiration time
+          const newToken = jwt.sign({id: user.id, email: user.email, role: user.role}, process.env.SECRET_KEY, { expiresIn: expiresIn,});
+      
+          // Return the new token and the user
+          return res.json({ token: newToken, user: user1 });
         } catch (err) {
-            return res.status(401).json({ error: err.message });
+          console.error(err);
+          return res.status(401).json({ error: err.message });
         }
-        /*- `token` - текущий jwt токен
-          - `secret` - секретный ключ, используемый для генерации токена
-          - `expiresIn` - новое время жизни токена в формате `1h`, `1d`, и т.п.*/
-    }
+      }
 
 }
 module.exports = new UserController()

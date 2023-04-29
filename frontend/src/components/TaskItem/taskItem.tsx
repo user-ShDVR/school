@@ -1,10 +1,40 @@
 import avatar from "../../assets/Avatar.png";
-import { Avatar, Button, Card, Col, Divider, InputNumber, List, Modal, Popconfirm, Row } from 'antd';
+import { Avatar, Button, Card, Col, Divider, InputNumber, List, Modal, Popconfirm, Progress, Row } from 'antd';
 import { ProjectTwoTone, UserOutlined } from '@ant-design/icons'
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useAddUserMutation } from "../../redux/api/taskApi";
+import Table, { ColumnsType } from "antd/es/table";
 const { Meta } = Card;
+
+interface DataType {
+	id: number;
+	name: string;
+	TaskUser: number;
+	rating: number;
+}
+
+const columns: ColumnsType<DataType> = [
+	{
+		title: 'ФИО',
+		dataIndex: 'name',
+		key: 'name',
+		render: (text) => <a>{text}</a>,
+	},
+	{
+		title: 'Прогноз',
+		dataIndex: 'TaskUser',
+		key: 'predicted',
+		render: (item) => Object.values(item)[0],
+	},
+	{
+		title: 'Экспертная оценка',
+		dataIndex: 'TaskUser',
+		key: 'rating',
+		render: (item) => Object.values(item)[1] === null ? <p>Нету</p> : Object.values(item)[1],
+	},
+
+];
 
 export const TaskItem = ({ item, refetch }) => {
 	const [addUser, { isError, error }] = useAddUserMutation();
@@ -20,7 +50,8 @@ export const TaskItem = ({ item, refetch }) => {
 			style={{ width: 240 }}
 			cover={<ProjectTwoTone style={{ fontSize: '230px', color: '#08c' }} />}
 		>
-			<Meta title={item.name} /><br /><br />
+			<Meta title={item.name} />
+			<p>Тип задачи: {item.typ === "INVAR" ? "Инвариантный": "Вариативный"}</p>
 			<Button style={{ width: "100%" }} type="primary" onClick={() => setModalOpen(true)}>
 				Открыть
 			</Button>
@@ -34,22 +65,11 @@ export const TaskItem = ({ item, refetch }) => {
 			onCancel={() => setModalOpen(false)}
 		>
 			<Divider />
+			<p>Тип задачи: {item.typ}</p>
+			<p>Время закрытия задачи: {item.stop}</p>
 			<p>Описание задачи: {item.description}</p>
 			<p>Пользователи находящиеся в задаче:</p>
-			<List
-				dataSource={item.users}
-				renderItem={(item: { id: number, name: string, }, index) => (
-					<List.Item>
-						<List.Item.Meta
-							avatar={
-								<Avatar shape="square" icon={<UserOutlined />} />
-							}
-							title={<a target="_blank" rel="noreferrer" href="mailto:name@gmail.com">{item.name}</a>}
-							description="???"
-						/>
-					</List.Item>
-				)}
-			/>
+			<Table size='small' columns={columns} dataSource={item.users} rowKey="id"/>
 			<Row gutter={16} justify={"space-between"}>
 				<Col flex="auto">
 					<Popconfirm

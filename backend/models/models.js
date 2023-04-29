@@ -91,7 +91,7 @@ const Tasks = sequelize.define('Tasks', {
 const TaskUser = sequelize.define('TaskUser', {
   predicted: {
     type: DataTypes.INTEGER,
-    allowNull: false },
+    defaultValue: 0 },
   rate: {
     type: DataTypes.INTEGER },
   userId: {

@@ -4,7 +4,7 @@ const typeController = require('../controllers/typeController')
 const checkRole = require('../middleware/checkRoleMiddleware')
 const tasksController = require('../controllers/tasksController')
 
-router.post('/task', tasksController.create) //checkRole('ADMIN'),
+router.post('/task', checkRole('ADMIN'), tasksController.create) //
 router.get('/get_all_task', tasksController.getAll)
 router.post('/task_add_like',  checkRole('EXPERT'), tasksController.add_like)
 router.post('/get_like_task', tasksController.get_like)

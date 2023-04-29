@@ -38,8 +38,7 @@ export const Register: FC = () => {
 		registerUser(values);
 	};
 
-	const [registerUser, { isLoading, isSuccess, error, isError }] =
-		useRegisterUserMutation();
+	const [registerUser, { isLoading, isSuccess, error, isError }] = useRegisterUserMutation();
 
 	const navigate = useNavigate();
 
@@ -53,7 +52,7 @@ export const Register: FC = () => {
 	React.useEffect(() => {
 		if (isSuccess) {
 			toast.success('User registered successfully');
-			navigate('/projects');
+			navigate('/');
 		}
 
 		if (isError) {

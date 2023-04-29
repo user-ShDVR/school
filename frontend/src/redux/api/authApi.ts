@@ -10,13 +10,6 @@ export const authApi = createApi({
     reducerPath: 'authApi',
     baseQuery: fetchBaseQuery({
         baseUrl: `http://localhost:5000/api/user/`,
-        prepareHeaders: (headers, { getState }) => {
-            const user = JSON.parse(localStorage.getItem('user'))
-            if (user.token) {
-              headers.set('Authorization', `Bearer ${user.token}`);
-            }
-            return headers;
-        },
     }),
     endpoints: (builder) => ({
         registerUser: builder.mutation<IGenericResponse, RegisterInput>({
