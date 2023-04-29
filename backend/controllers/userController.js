@@ -10,7 +10,7 @@ const generateJwt = (id, email, role) => {
     return jwt.sign(
         { id, email, role },
         process.env.SECRET_KEY,
-        { expiresIn: '24h' }
+        { expiresIn: '30d' }
     )
 
 }
@@ -162,7 +162,7 @@ class UserController {
                 throw new Error('No token provided');
             }
             // Проверяем переданный токен на валидность и получаем из него данные
-            const expiresIn = '24h';
+            const expiresIn = '30d';
             
             const {user} = jwt.verify(token, process.env.SECRET_KEY);
             const user1 = await Users.findOne({ where: { email: user.email } })
