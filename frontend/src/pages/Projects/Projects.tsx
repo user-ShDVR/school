@@ -24,7 +24,6 @@ export const Projects = () => {
 		refetch()
 	};
 	const onFinishModal = (values: any) => {
-		console.log(values)
 		createProject(values)
 		setModalOpen(false)
 		refetch()

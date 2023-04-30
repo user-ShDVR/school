@@ -112,11 +112,7 @@ class TypeController {
         if (!user) {
             throw new Error('Такого пользователя не существует');
         }
-
-        // получаем количество проектов пользователя
         const count = await user.countContests();
-
-        // получаем проекты пользователя с лимитом и оффсетом
         const userContests = await user.getContests({
             limit: limit,
             offset: offset,

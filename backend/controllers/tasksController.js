@@ -65,31 +65,25 @@ class TasksController {
     async get_like(req, res){
 
         let { name } = req.body;
-
         const rat = await Tasks.findOne({where:{name: name}});
 
         if(rat){
-
             return res.json(rat.rating);
-
         }else{
 
             return res.json("Нет такого");
-            
         }
     }
 
     async add_user(req, res){
         let { userId, contentId, predict } = req.body;
-        
+
         const user = await Users.findOne({ where: { id: userId } });
         const task = await Tasks.findOne({ where: { id: contentId } });
-
 
         if (user && task) {
             task.addUsers(user, { through: { predicted: predict } })
             return res.json(task) //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Пользователь успешно добавлен')
-
         } else {
             return next(ApiError.badRequest('Такого пользователя или проекта не существует'))
         }
@@ -101,12 +95,10 @@ class TasksController {
         const task1= await Tasks.findByPk(taskId)
         
         if (!task1) {
-
             return res.json('task не найден в БД')
         }
         const user1 = await Users.findByPk(userId)
         if (!user1) {
-            
             return res.json('User не найден в БД')
         }
         const user = await Users.findOne({ where: { id: userId } });
@@ -114,7 +106,6 @@ class TasksController {
 
 
         if (user && task) {
-
             //const taskUser = await TaskUser.findOne({ where: { userId, taskId } }) из вот этой функи достаем это -> {rates: 0, votes: 0, rating: 0}
             // rates + rate
             // votes + 1
@@ -123,11 +114,9 @@ class TasksController {
             //const rating = await TaskRating.create({userId: userId, TasksId: taskId, predicted: predict})
             //const tu = await TaskUser.create({taskId, userId})
             task.addUsers(user, { through: { predicted: predict } })
-
             return res.json(task) //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Пользователь успешно добавлен')
 
         } else {
-
             return next(ApiError.badRequest('Такого пользователя или проекта не существует'))
 
         }
@@ -135,24 +124,39 @@ class TasksController {
     }
 
     async getUserTasks(req, res) {
-        let { userId } = req.query;
-        const types = await Users.findByPk(userId,{
+        let { userId, page, limit, type } = req.query;
+        page = page || 1;
+        limit = limit || 8;
+        let offset = page * limit - limit;
+
+        // получаем пользователя
+        const user = await Users.findOne({
+            where: { id: userId }
+        });
+
+        if (!user) {
+            throw new Error('Такого пользователя не существует');
+        }
+        const count = await user.countTasks({where: { typ: type }});
+        const userTasks = await user.getTasks({
+            where: { typ: type },
+            limit: limit,
+            offset: offset,
             distinct: true,
-            attributes: [],
             include: [{
-
-                model: Tasks,
-                as: 'Tasks',
+                model: Users,
+                as: 'users',
                 required: false,
-                attributes: ['id', 'name' ],
-                through: { attributes: [] }
-
+                attributes: ['id', 'name', 'email'],
+                through: { attributes: ['predicted', 'rate'] }
             }],
         });
-        return res.json(types)
+
+        return res.json({
+            count: count,
+            rows: userTasks
+        });
     }
-
-
 }
 //сразу указывает сколько сделает
 //админ только создает задачу, а юзеры сами выбирают сколько сделают в цифрах
