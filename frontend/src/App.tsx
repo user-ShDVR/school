@@ -12,6 +12,7 @@ import { Profile } from './pages/Profile';
 import { Tasks } from './pages/Tasks';
 import { setUser } from './redux/features/userSlice';
 import { useRefreshUserMutation } from './redux/api/authApi';
+import { MyProjects } from './pages/MyProjects';
 const { Header, Content } = Layout;
 
 
@@ -52,6 +53,7 @@ const App: React.FC = () => {
               <Route path='/' element={<Login />} />
               <Route path="register" element={<Register />} />
               <Route path="tasks" element={<Tasks />} />  
+              <Route path="my-projects" element={<MyProjects />} />  
               <Route path="projects" element={<Projects />} />
               <Route path="profile" element={<Profile />} />
             </Routes>

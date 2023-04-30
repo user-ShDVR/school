@@ -159,7 +159,6 @@ Contests.belongsToMany(Users, {
 
 
 
-
 Users.belongsToMany(Tasks, {
   through: 'TaskUser',
   as: 'Tasks',

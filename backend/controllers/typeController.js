@@ -20,7 +20,7 @@ class TypeController {
         return res.json(contest);  //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Проект успешно создан')
 
     }
-    
+
 
     async getAll(req, res) {
         let { limit, page } = req.query;
@@ -36,7 +36,7 @@ class TypeController {
                 model: Users,
                 as: 'users',
                 required: false,
-                attributes: ['id', 'name','email' ],
+                attributes: ['id', 'name', 'email'],
                 through: { attributes: [] }
 
             }],
@@ -75,25 +75,25 @@ class TypeController {
         if (!user) {
             throw new Error('Такого пользователя не существует')
         }
-        const rating = await Rating.create({userId: userId, contestsId: contestId, rate})
-        const votes = await Rating.count({where: {contestsId: contestId}})
+        const rating = await Rating.create({ userId: userId, contestsId: contestId, rate })
+        const votes = await Rating.count({ where: { contestsId: contestId } })
         if (votes) {
-            const rates = await Rating.sum('rate', {where: {contestsId: contestId}})
-            rated = {rates, votes, rating: rates/votes}
+            const rates = await Rating.sum('rate', { where: { contestsId: contestId } })
+            rated = { rates, votes, rating: rates / votes }
             const updateContest = await Contests.update({ rating: rated }, {
                 where: {
                     id: contestId
                 }
-              })
-              res.json(updateContest)
+            })
+            res.json(updateContest)
         } else {
-            rated = {rates: 0, votes: 0, rating: 0}
+            rated = { rates: 0, votes: 0, rating: 0 }
             const updateContest = await Contests.update({ rating }, {
                 where: {
                     id: contestId
                 }
-              })
-              res.json(updateContest)
+            })
+            res.json(updateContest)
         }
 
     }
@@ -103,23 +103,39 @@ class TypeController {
         page = page || 1;
         limit = limit || 8;
         let offset = page * limit - limit;
-        const user = await Users.findByPk(userId,{
+
+        // получаем пользователя
+        const user = await Users.findOne({
+            where: { id: userId }
+        });
+
+        if (!user) {
+            throw new Error('Такого пользователя не существует');
+        }
+
+        // получаем количество проектов пользователя
+        const count = await user.countContests();
+
+        // получаем проекты пользователя с лимитом и оффсетом
+        const userContests = await user.getContests({
+            limit: limit,
+            offset: offset,
             distinct: true,
-            attributes: [],
             include: [{
-                model: Contests,
-                as: 'Contests',
+
+                model: Users,
+                as: 'users',
                 required: false,
-                attributes: ['id', 'name', 'description', 'workers', 'rating'],
-                through: { attributes: [] },
-                limit: limit,
-                offset: offset
+                attributes: ['id', 'name', 'email'],
+                through: { attributes: [] }
+
             }],
         });
-        if (!user) {
-            throw new Error('Такого пользователя не существует')
-        }
-        return res.json(user.Contests)
+
+        return res.json({
+            count: count,
+            rows: userContests
+        });
     }
 
 }

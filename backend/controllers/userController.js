@@ -163,7 +163,6 @@ class UserController {
       
           const expiresIn = '30d';
           const user = jwt.verify(token, process.env.SECRET_KEY);
-          console.log(user)
           const user1 = await Users.findOne({ where: { email: user.email } });
       
           // Generate a new token with a new expiration time

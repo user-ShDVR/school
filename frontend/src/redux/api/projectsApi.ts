@@ -34,7 +34,7 @@ export const projectsApi = createApi({
                 const { limit, page } = arg;
                 const user = JSON.parse(localStorage.getItem('user'))
                 return {
-                    url: 'get_all_project',
+                    url: 'getUserProjects',
                     params: { limit, page, userId: user.user.id},
                 };
             },
