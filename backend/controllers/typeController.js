@@ -69,11 +69,11 @@ class TypeController {
         const contest = await Contests.findByPk(contestId)
 
         if (!contest) {
-            throw new Error('Товар не найден в БД')
+            throw new Error('Такого проекта не существует')
         }
         const user = await Users.findByPk(userId)
         if (!user) {
-            throw new Error('Пользователь не найден в БД')
+            throw new Error('Такого пользователя не существует')
         }
         const rating = await Rating.create({userId: userId, contestsId: contestId, rate})
         const votes = await Rating.count({where: {contestsId: contestId}})
@@ -99,21 +99,27 @@ class TypeController {
     }
 
     async getUserProjects(req, res) {
-        let { userId } = req.query;
-        const types = await Users.findByPk(userId,{
+        let { userId, page, limit } = req.query;
+        page = page || 1;
+        limit = limit || 8;
+        let offset = page * limit - limit;
+        const user = await Users.findByPk(userId,{
             distinct: true,
             attributes: [],
             include: [{
-
                 model: Contests,
                 as: 'Contests',
                 required: false,
-                attributes: ['id', 'name' ],
-                through: { attributes: [] }
-
+                attributes: ['id', 'name', 'description', 'workers', 'rating'],
+                through: { attributes: [] },
+                limit: limit,
+                offset: offset
             }],
         });
-        return res.json(types)
+        if (!user) {
+            throw new Error('Такого пользователя не существует')
+        }
+        return res.json(user.Contests)
     }
 
 }

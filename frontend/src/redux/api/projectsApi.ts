@@ -29,6 +29,16 @@ export const projectsApi = createApi({
                 };
             },
         }),
+        getAllUserProjects: builder.query<any, { limit: string; page: string }>({
+            query(arg) {
+                const { limit, page } = arg;
+                const user = JSON.parse(localStorage.getItem('user'))
+                return {
+                    url: 'get_all_project',
+                    params: { limit, page, userId: user.user.id},
+                };
+            },
+        }),
         createProject: builder.mutation({
             query(data) {
                 const user = JSON.parse(localStorage.getItem('user'))
@@ -58,4 +68,5 @@ export const {
     useCreateProjectMutation,
     useAddUserMutation,
     useGetAllProjectsQuery,
+    useGetAllUserProjectsQuery,
 } = projectsApi;
