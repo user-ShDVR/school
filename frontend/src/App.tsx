@@ -13,6 +13,7 @@ import { Tasks } from './pages/Tasks';
 import { setUser } from './redux/features/userSlice';
 import { useRefreshUserMutation } from './redux/api/authApi';
 import { MyProjects } from './pages/MyProjects';
+import { Users } from './pages/Users';
 const { Header, Content } = Layout;
 
 
@@ -40,7 +41,7 @@ const App: React.FC = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isLoading]);
 
-  
+//Users
 // const FullPizza = React.lazy(() => import(/* webpackChunkName: "FullPizza" */ './pages/FullPizza'));
   return (
     <>
@@ -53,6 +54,7 @@ const App: React.FC = () => {
               <Route path='/' element={<Login />} />
               <Route path="register" element={<Register />} />
               <Route path="tasks" element={<Tasks />} />  
+              <Route path="users" element={<Users />} />  
               <Route path="my-projects" element={<MyProjects />} />  
               <Route path="projects" element={<Projects />} />
               <Route path="profile" element={<Profile />} />

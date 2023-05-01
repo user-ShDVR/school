@@ -137,35 +137,27 @@ class TypeController {
 
 
     async del_project(req, res) {
-
         const { id } = req.body;
         try {
-
             Contests.destroy({ where: { id: id } });
             ContestUser.destroy({ where: { contestsId: id } });
             Rating.destroy({ where: { contestsId: id } });
             res.json('Ok')
-
         } catch (error) {
             res.json(error)
         }
-
     }
 
     async del_user_project(req, res) {
 
         const { user_id } = req.body;
         try {
-
             ContestUser.destroy({ where: { userId: user_id } });
             Rating.destroy({ where: { userId: user_id } });
             res.json('Ok')
         } catch (error) {
             res.json(error)
         }
-
-
-
     }
 
 

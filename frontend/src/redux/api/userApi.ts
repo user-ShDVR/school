@@ -1,0 +1,48 @@
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { LoginInput } from '../../pages/Login';
+import { RegisterInput } from '../../pages/Register';
+import { IGenericResponse, IUserState } from './types';
+import { RootState } from '../store';
+
+
+
+
+export const userApi = createApi({
+    reducerPath: 'userApi',
+    baseQuery: fetchBaseQuery({
+        baseUrl: `http://localhost:5000/api/user/`,
+        prepareHeaders: (headers, { getState }) => {
+            const token = (getState() as RootState).userState.token;
+            if (token) {
+              headers.set('Authorization', `Bearer ${token}`);
+            }
+            return headers;
+        },
+    }),
+    endpoints: (builder) => ({
+        getAllUsers: builder.query<any, { limit: string; page: string }>({
+            query(arg) {
+                const { limit, page } = arg;
+                return {
+                    url: 'getUsers',
+                    params: { limit, page },
+                };
+            },
+        }),
+        updateUser: builder.mutation({
+            query(data) {
+                return {
+                    url: 'change_inf_user',
+                    method: 'POST',
+                    body: data,
+                }
+            }
+        }),
+
+    })
+})
+
+export const {
+    useGetAllUsersQuery,
+    useUpdateUserMutation,
+} = userApi;

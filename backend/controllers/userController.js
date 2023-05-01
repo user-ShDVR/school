@@ -104,7 +104,7 @@ class UserController {
 
     async change_inf_user(req, res) {
 
-        let { id, new_data } = req.body;
+        let { id, name, email, role } = req.body;
 
         try {
 
@@ -116,13 +116,13 @@ class UserController {
 
             }
 
-            await ok.update(new_data);
+            await ok.update({name, email, role});
 
             return res.json("Инфа обновлена")
 
         } catch (e) {
 
-            return res.json("Ошибка епт")
+            return res.json("Ошибка")
 
         }
 
@@ -176,9 +176,15 @@ class UserController {
         }
     }
 
-    async get_all_users(rea, res) {
-
-        const users = await Users.findAll();
+    async get_all_users(req, res) {
+        let {page, limit } = req.query;
+        page = page || 1;
+        limit = limit || 8;
+        let offset = page * limit - limit;
+        const users = await Users.findAndCountAll({
+            limit: limit,
+            offset: offset
+        });
         return res.json(users);
 
     }
