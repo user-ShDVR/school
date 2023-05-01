@@ -38,6 +38,15 @@ export const userApi = createApi({
                 }
             }
         }),
+        deleteUser: builder.mutation({
+            query(data) {
+                return {
+                    url: 'del_user',
+                    method: 'POST',
+                    body: data,
+                }
+            }
+        }),
 
     })
 })
@@ -45,4 +54,5 @@ export const userApi = createApi({
 export const {
     useGetAllUsersQuery,
     useUpdateUserMutation,
+    useDeleteUserMutation,
 } = userApi;
