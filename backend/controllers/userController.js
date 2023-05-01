@@ -155,26 +155,33 @@ class UserController {
 
     async refreshJWTToken(req, res) {
         const { token } = req.body;
-      
+
         try {
-          if (!token) {
-            throw new Error('No token provided');
-          }
-      
-          const expiresIn = '30d';
-          const user = jwt.verify(token, process.env.SECRET_KEY);
-          const user1 = await Users.findOne({ where: { email: user.email } });
-      
-          // Generate a new token with a new expiration time
-          const newToken = jwt.sign({id: user.id, email: user.email, role: user.role}, process.env.SECRET_KEY, { expiresIn: expiresIn,});
-      
-          // Return the new token and the user
-          return res.json({ token: newToken, user: user1 });
+            if (!token) {
+                throw new Error('No token provided');
+            }
+
+            const expiresIn = '30d';
+            const user = jwt.verify(token, process.env.SECRET_KEY);
+            const user1 = await Users.findOne({ where: { email: user.email } });
+
+            // Generate a new token with a new expiration time
+            const newToken = jwt.sign({ id: user.id, email: user.email, role: user.role }, process.env.SECRET_KEY, { expiresIn: expiresIn, });
+
+            // Return the new token and the user
+            return res.json({ token: newToken, user: user1 });
         } catch (err) {
-          console.error(err);
-          return res.status(401).json({ error: err.message });
+            console.error(err);
+            return res.status(401).json({ error: err.message });
         }
-      }
+    }
+
+    async get_all_users(rea, res) {
+
+        const users = await Users.findAll();
+        return res.json(users);
+
+    }
 
 }
 module.exports = new UserController()
