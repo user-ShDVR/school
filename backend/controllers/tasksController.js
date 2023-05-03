@@ -155,7 +155,6 @@ class TasksController {
         page = page || 1;
         limit = limit || 8;
         let offset = page * limit - limit;
-
         // получаем пользователя
         const user = await Users.findOne({
             where: { id: userId }
@@ -164,9 +163,28 @@ class TasksController {
         if (!user) {
             throw new Error('Такого пользователя не существует');
         }
-        const count = await user.countTasks({ where: { typ: type } });
-        const userTasks = await user.getTasks({
-            where: { typ: type },
+        if (type !== undefined) {
+            const count = await user.countTasks({ where: { typ: type } });
+            const userTasks = await user.getTasks({
+                where: { typ: type },
+                limit: limit,
+                offset: offset,
+                distinct: true,
+                include: [{
+                    model: Users,
+                    as: 'users',
+                    required: false,
+                    attributes: ['id', 'name', 'email'],
+                    through: { attributes: ['predicted', 'rate'] }
+                }],
+            });
+            return res.json({
+                count: count,
+                rows: userTasks
+            });
+        } else {
+            const count = await user.countTasks();
+            const userTasks = await user.getTasks({
             limit: limit,
             offset: offset,
             distinct: true,
@@ -178,11 +196,29 @@ class TasksController {
                 through: { attributes: ['predicted', 'rate'] }
             }],
         });
+        const commitment = userTasks.map((item)=>{
+            return (
+                {
+                    "item": item.name,
+                    "user": "Обязательства",
+                    "score": item.TaskUser.predicted
+                }
+            )
+        })
+        const execution = userTasks.map((item)=>{
+            return (
+                {
+                    "item": item.name,
+                    "user": "Фактическое исполнение",
+                    "score": item.TaskUser.rate
+                }
+            )
+        })
+        const result = [...commitment, ...execution]
+        return res.json(result);
+        }
+        
 
-        return res.json({
-            count: count,
-            rows: userTasks
-        });
     }
 }
 //сразу указывает сколько сделает

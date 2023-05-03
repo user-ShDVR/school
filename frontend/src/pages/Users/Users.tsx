@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import { Button, Input, Pagination, Progress, Select, Space, Table } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import { useGetAllUsersQuery, useUpdateUserMutation } from '../../redux/api/userApi';
+import { useDeleteUserMutation, useGetAllUsersQuery, useUpdateUserMutation } from '../../redux/api/userApi';
 
 
 export const Users: FC = (props) => {
@@ -46,9 +46,9 @@ const columns: ColumnsType<DataType> = [
 		key: 'operation',
 		fixed: 'right',
 		width: 100,
-		render: () => <Space size="middle">
+		render: (record) => <Space size="middle">
 			<Button type='dashed' onClick={handleApplyChanges}>Применить изменения</Button>
-			<Button type='default'>Удалить</Button>
+			<Button type='default' onClick={()=> handleDeleteChanges(record.id)}>Удалить</Button>
 		</Space>,
 	},
 ];
@@ -57,6 +57,7 @@ const columns: ColumnsType<DataType> = [
 	const [editedData, setEditedData] = useState({});
 	const { data, isSuccess, refetch } = useGetAllUsersQuery({ limit: '8', page: `${current}` });
 	const [updateUser] = useUpdateUserMutation();
+	const [deleteUser] = useDeleteUserMutation();
 
 	const handleInputChange = (value, id, key) => {
 		setEditedData((prev) => ({
@@ -84,6 +85,11 @@ const columns: ColumnsType<DataType> = [
 			updateUser({ id, name, email, role });
 		});
 		setEditedData({});
+		refetch();
+	};
+
+	const handleDeleteChanges = (id) => {
+		deleteUser({id});
 		refetch();
 	};
 
