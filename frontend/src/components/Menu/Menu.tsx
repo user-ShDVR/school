@@ -8,7 +8,6 @@ const MenuItems: MenuProps['items'] = [
 	{ key: 3, label: (<Link to={'/my-projects'}>Мои проекты</Link>)},
 	{ key: 4, label: (<Link to={'/tasks'}>Задачи</Link>)},
 	{ key: 5, label: (<Link to={'/users'}>Список работников</Link>)},
-	{ key: 6, label: (<Link to={'/statisctics'}>Статистика</Link>)},
 ];
 
 export const MenuComponent = () => {
