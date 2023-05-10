@@ -16,8 +16,8 @@ export const Tasks = () => {
 	const [current, setCurrent] = useState(1);
 	const [form] = Form.useForm();
 	const [api, contextHolder] = notification.useNotification();
-	const { data, isSuccess, refetch } = useGetAllTasksQuery({ limit: '8', page: `${current}` })
-	const [createProject, { isError, error }] = useCreateTaskMutation();
+	const { data,isSuccess, refetch } = useGetAllTasksQuery({ limit: '8', page: `${current}` })
+	const [createProject, {isSuccess: isCreateSuccess, isError, error }] = useCreateTaskMutation();
 	const onChange = (page) => {
 		setCurrent(page);
 		refetch()
@@ -25,14 +25,16 @@ export const Tasks = () => {
 	const onFinishModal = (values: any) => {
 		createProject(values)
 		setModalOpen(false)
-		refetch()
 	};
 
 	React.useEffect(() => {
 		if (isError) {
 			toast.error((error as any).data.message)
 		}
-	}, [isError])
+		if (isCreateSuccess) {
+			refetch()
+		}
+	}, [isError, isCreateSuccess])
 	return <div style={{ maxWidth: 1024 }}>
 		<Row justify="space-around" style={{ width: "100%" }} gutter={[16, 16]}>
 			{isSuccess ?

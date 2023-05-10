@@ -33,7 +33,10 @@ export const Projects = () => {
 		if (isError) {
 		 toast.error((error as any).data.message)
 		}
-	   },[isError])
+		if (isSuccess) {
+			refetch()
+		   }
+	   },[isError, isSuccess])
 	return <div style={{ maxWidth: 1024}}>
 		<Row justify="space-around" style={{ width: "100%" }} gutter={[16, 16]}>
 			{isSuccess ?

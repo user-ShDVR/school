@@ -29,6 +29,15 @@ export const taskApi = createApi({
                 };
             },
         }),
+        getOne: builder.query<any, { taskId: string }>({
+            query(arg) {
+                const { taskId } = arg;
+                return {
+                    url: 'get_one',
+                    params: { taskId },
+                };
+            },
+        }),
         createTask: builder.mutation({
             query(data) {
                 const user = JSON.parse(localStorage.getItem('user'))
@@ -51,11 +60,34 @@ export const taskApi = createApi({
                 }
             }
         }),
+        addRate: builder.mutation({
+            query(data) {
+                return {
+                    url: 'create_rate',
+                    method: 'POST',
+                    body: data,
+                }
+            }
+        }),
+        getAllUserTasks: builder.query<any, { limit: string; page: string; type?: string; }>({
+            query(arg) {
+                const { limit, page, type } = arg;
+                const user = JSON.parse(localStorage.getItem('user'))
+                 
+                return {
+                    url: 'getUserTasks',
+                    params: { limit, page, type, userId: user.user.id },
+                };
+            },
+        }),
     })
 })
 
 export const {
     useCreateTaskMutation,
     useAddUserMutation,
+    useAddRateMutation,
+    useGetAllUserTasksQuery,
     useGetAllTasksQuery,
+    useGetOneQuery,
 } = taskApi;

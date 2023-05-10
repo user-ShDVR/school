@@ -2,7 +2,7 @@ import avatar from "../../assets/Avatar.png";
 import { Avatar, Button, Card, Col, Divider, InputNumber, List, Modal, Popconfirm, Progress, Row } from 'antd';
 import { ProjectTwoTone, UserOutlined } from '@ant-design/icons'
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useAddUserMutation } from "../../redux/api/taskApi";
 import Table, { ColumnsType } from "antd/es/table";
 const { Meta } = Card;
@@ -31,7 +31,7 @@ const columns: ColumnsType<DataType> = [
 		title: 'Экспертная оценка',
 		dataIndex: 'TaskUser',
 		key: 'rating',
-		render: (item) => Object.values(item)[1] === null ? <p>Нету</p> : Object.values(item)[1],
+		render: (item) => item.rate.rating === 0 ? <p>Нету</p> : item.rate.rating,
 	},
 
 ];
@@ -67,7 +67,7 @@ export const TaskItem = ({ item, refetch }) => {
 			<Divider />
 			<p>Тип задачи: {item.typ}</p>
 			<p>Время закрытия задачи: {item.stop}</p>
-			<p>Описание задачи: {item.description}</p>
+			<pre>Описание задачи: {item.description }</pre>
 			<p>Пользователи находящиеся в задаче:</p>
 			<Table size='small' columns={columns} dataSource={item.users} rowKey="id"/>
 			<Row gutter={16} justify={"space-between"}>

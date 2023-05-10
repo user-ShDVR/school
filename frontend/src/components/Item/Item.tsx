@@ -21,7 +21,7 @@ export const Item = ({ item, refetch }) => {
 		>
 			<Meta title={item.name} />
 			Автор: {item.users[0].name}<br />
-			Квота: {item.users.length}/{item.workers}<br /><br />
+			Квота: {item.users.length}/{item.workers}<br />
 			<Button style={{ width: "100%" }} type="primary" onClick={() => setModalOpen(true)}>
 				Открыть
 			</Button>
@@ -38,7 +38,7 @@ export const Item = ({ item, refetch }) => {
 			<p>Автор проекта: {item.users[0].name}</p>
 			<p>Квота людей: {item.users.length}/{item.workers}</p>
 			<p>Средняя оценка экспертов: </p>
-			<p>Описание проекта: {item.description}</p>
+			<pre>Описание проекта: {item.description}</pre>
 			<p>Пользователи находящиеся в проекте:</p>
 			<List
         dataSource={item.users}

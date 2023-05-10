@@ -93,7 +93,7 @@ const TaskUser = sequelize.define('TaskUser', {
     type: DataTypes.INTEGER,
     defaultValue: 0 },
   rate: {
-    type: DataTypes.JSON, defaultValue: "{rates: 0, votes: 0, rating: 0}" },
+    type: DataTypes.JSON, defaultValue: {rates: 0, votes: 0, rating: 0} },
   userId: {
     type: DataTypes.INTEGER,
     allowNull: false,

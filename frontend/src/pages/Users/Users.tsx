@@ -1,12 +1,15 @@
-import { FC, useState } from 'react';
-import { Button, Input, Pagination, Progress, Select, Space, Table } from 'antd';
+import React, { FC, useState } from 'react';
+import { Button, Input, Pagination, Progress, Select, Space, Table, TableColumnsType } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useDeleteUserMutation, useGetAllUsersQuery, useUpdateUserMutation } from '../../redux/api/userApi';
 
 
 export const Users: FC = (props) => {
 
+
+
 interface DataType {
+	Tasks: readonly DataType[];
 	id: number;
 	name: string;
 	email: string;
@@ -47,11 +50,27 @@ const columns: ColumnsType<DataType> = [
 		fixed: 'right',
 		width: 100,
 		render: (record) => <Space size="middle">
-			<Button type='dashed' onClick={handleApplyChanges}>Применить изменения</Button>
+			<Button type='dashed' onClick={()=> handleApplyChanges(record.id)}>Применить изменения</Button>
 			<Button type='default' onClick={()=> handleDeleteChanges(record.id)}>Удалить</Button>
 		</Space>,
 	},
 ];
+
+const expandedColumns: TableColumnsType<any> = [
+	{ title: 'Имя проекта', dataIndex: 'name', key: 'name' },
+	{
+	  title: 'Прогноз',
+	  dataIndex: 'TaskUser',
+	  key: 'predicted',
+	  render: (item) => Object.values(item)[0],
+  },
+  {
+	  title: 'Экспертная оценка',
+	  dataIndex: 'TaskUser',
+	  key: 'rating',
+	  render: (item) => item.rate.rating === 0 ? <p>Нету</p> : item.rate.rating,
+  },
+  ];
 
 	const [current, setCurrent] = useState(1);
 	const [editedData, setEditedData] = useState({});
@@ -79,11 +98,11 @@ const columns: ColumnsType<DataType> = [
 		}));
 	};
 
-	const handleApplyChanges = () => {
-		Object.keys(editedData).forEach((id) => {
-			const { name, email, role } = editedData[id];
-			updateUser({ id, name, email, role });
-		});
+	const handleApplyChanges = (id) => {
+		
+		const { name, email, role } = editedData[id];
+		updateUser({ id, name, email, role });
+		
 		setEditedData({});
 		refetch();
 	};
@@ -98,11 +117,17 @@ const columns: ColumnsType<DataType> = [
 		refetch();
 	};
 
+	React.useEffect(() => {
+		if (isSuccess) {
+			refetch()
+		}
+	}, [ isSuccess])
+
 	return (
-		<div style={{ width: "100%", maxWidth: "1024px", height: "100%", padding: "32px 32px", background: "#FFFFFF", borderRadius: "32px", boxShadow: "28px 0px 50.4863px rgba(0, 0, 0, 0.17)", justifyContent: "center" }}>
+		<div style={{ width: "100%", maxWidth: "1024px", height: "100%", padding: "32px 32px", background: "#FFFFFF", borderRadius: "32px", boxShadow: "28px 0px 50.4863px rgba(0, 0, 0, 0.17)", justifyContent: "center",  }}>
 			{isSuccess ?
 				<>
-					<Table size='large' pagination={false} columns={columns} dataSource={data.rows} rowKey="id" />
+					<Table size='large' scroll={{ y: 650, x:'max-content' }} pagination={false} expandable={{ expandedRowRender: (record) => <Table columns={expandedColumns} dataSource={record.Tasks} pagination={false} />, defaultExpandedRowKeys: ['0'] }} columns={columns} dataSource={data.rows} rowKey="id" />
 					<Pagination defaultPageSize={8} pageSize={8} showSizeChanger={false} current={current} onChange={onChange} total={isSuccess ? data.count : 0} />
 				</>
 				:

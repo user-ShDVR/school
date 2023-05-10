@@ -79,6 +79,13 @@ export const Register: FC = () => {
 
 	}, [isSubmitSuccessful]);
 
+	const user = JSON.parse(localStorage.getItem('user') || "{}")
+	React.useEffect(() => {
+	  if (user.token) {
+		  navigate("/profile")
+	  }
+	},[])
+
 	return (
 		<div style={{ display: 'flex', margin: "0px auto", width: "100%", maxWidth: "800px", height: '90%', background: "#FFFFFF", borderRadius: "32px", boxShadow: "28px 0px 50.4863px rgba(0, 0, 0, 0.17)", textAlign: 'center', justifyContent: 'center' }}>
 			{contextHolder}

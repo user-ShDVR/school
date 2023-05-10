@@ -14,6 +14,7 @@ import { setUser } from './redux/features/userSlice';
 import { useRefreshUserMutation } from './redux/api/authApi';
 import { MyProjects } from './pages/MyProjects';
 import { Users } from './pages/Users';
+import { RatingPage } from './pages/Rating';
 const { Header, Content } = Layout;
 
 
@@ -31,9 +32,6 @@ const App: React.FC = () => {
   },[])
 
   React.useEffect(() => {
-		if (isSuccess) {
-			navigate('profile');
-		}
 
 		if (isError) {
 		  navigate("/")
@@ -58,6 +56,7 @@ const App: React.FC = () => {
               <Route path="my-projects" element={<MyProjects />} />  
               <Route path="projects" element={<Projects />} />
               <Route path="profile" element={<Profile />} />
+              <Route path="/rating/:taskId" element={<RatingPage />} />
             </Routes>
           </Content>
         </Layout>

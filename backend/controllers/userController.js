@@ -1,7 +1,7 @@
 const ApiError = require('../error/ApiError');
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const { Users, Contests } = require('../models/models')
+const { Users, Contests, Tasks } = require('../models/models')
 const uuid = require('uuid')
 const path = require('path');
 
@@ -183,7 +183,15 @@ class UserController {
         let offset = page * limit - limit;
         const users = await Users.findAndCountAll({
             limit: limit,
-            offset: offset
+            offset: offset,
+            distinct: true,
+            include: [{
+                model: Tasks,
+                as: 'Tasks',
+                required: false,
+                attributes: ['id', 'name'],
+                through: { attributes: ['predicted', 'rate'] }
+            }],
         });
         return res.json(users);
 

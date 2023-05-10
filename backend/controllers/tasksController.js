@@ -2,25 +2,63 @@ const { Tasks, Users, TaskUser } = require('../models/models');
 const ApiError = require('../error/ApiError');
 const uuid = require('uuid');
 const path = require('path');
+const cron = require('node-cron');
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'savelyev_av@edu.surgu.ru',
+        pass: 'plbhwtubkzdlwluc'
+    }
+});
+
+function sendEmail(task_id = undefined) {
+    const mailOptions = {
+        from: 'savelyev_av@edu.surgu.ru',
+        to: 'sutula05@bk.ru',
+        subject: 'Привет',
+        text: `Вам необходимо поставить рейтинг по такой ссылке https://host.com/rating?taskId=${task_id}`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log(`Email sent: ${info.response}`);
+            schedule.stop();
+        }
+    });
+}
 
 class TasksController {
 
+
+
     async create(req, res, next) {
+        try {
+            const { name, description, typ, userId, stop } = req.body;
+            const isExists = await Tasks.findOne({ where: { name } });
 
-        let { name, description, typ, userId, stop } = req.body;
-        const isExists = await Tasks.findOne({ where: { name } });
+            if (isExists) {
+                return next(ApiError.badRequest('Проект с таким именем уже существует'));
+            }
 
-        if (isExists) {
+            const task = await Tasks.create({ name, description, typ, stop }, { returning: true });
+            const user = await Users.findAll({ where: { id: userId } });
+            await task.addUser(user);
+            let d = new Date(stop)
+            console.log(d.getMonth() + 1)
+            console.log(d.getDate())
+            const schedule = cron.schedule(`59 11 5 ${d.getDate()} ${d.getMonth() + 1} *`, () => {
+                sendEmail(task.id)
+            });
+            schedule.start();
 
-            return next(ApiError.badRequest('Проект с таким именем уже существует'));
-
+            return res.json('Проект успешно создан');
+        } catch (error) {
+            return next(ApiError.internal('Ошибка создания проекта', error));
         }
-
-        const task = await Tasks.create({ name, description, typ, stop });
-        const user = await Users.findAll({ where: { id: userId } });
-        await task.addUsers(user); //task.addUsers(user, { through: { author: true } })
-        return res.json(task);  //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Проект успешно создан')
-
     }
 
 
@@ -47,33 +85,25 @@ class TasksController {
 
     }
 
-    async add_like(req, res) {
+    async getOne(req, res) {
+        let { taskId } = req.query;
+        const task = await Tasks.findOne({
+            where: { id: taskId },
+            distinct: true,
+            include: [{
+                model: Users,
+                as: 'users',
+                required: false,
+                attributes: ['id', 'name'],
+                through: { attributes: ['predicted', 'rate'] }
+            }],
+        });
 
-        let { name, val, user } = req.body;
-
-        const proj = await Tasks.findOne({ where: { name } });
-
-        let obj = JSON.parse(proj.rating);
-
-        obj[user] = +val;
-
-        const al = await Tasks.update({ rating: JSON.stringify(obj) }, { where: { name: name } });
-        return res.json(al)
+        return res.json(task)
 
     }
 
-    async get_like(req, res) {
 
-        let { name } = req.body;
-        const rat = await Tasks.findOne({ where: { name: name } });
-
-        if (rat) {
-            return res.json(rat.rating);
-        } else {
-
-            return res.json("Нет такого");
-        }
-    }
 
     async add_user(req, res) {
         let { userId, contentId, predict } = req.body;
@@ -91,7 +121,7 @@ class TasksController {
     }
 
     async createRate(req, res) {
-        let { userId, taskId, rate, predict } = req.body;
+        let { userId, taskId, rate } = req.body;
         const task1 = await Tasks.findByPk(taskId)
 
         if (!task1) {
@@ -108,30 +138,14 @@ class TasksController {
 
 
             const taskUser = await TaskUser.findOne({ where: { userId: userId, TasksId: taskId } }) //из вот этой функи достаем это -> {rates: 0, votes: 0, rating: 0}
-            // rates + rate
-            // votes + 1
-            // rating = rates/votes
-            // update {rates: 5, votes: 1, rating: 5}
-            //const rating = await TaskRating.create({userId: userId, TasksId: taskId, predicted: predict})
-            //const tu = await TaskUser.create({taskId, userId})
-            if (!predict) {
-                let obja = eval("(" + taskUser.rate + ")");
-                obja.rates = +obja.rates + +rate;
-                obja.votes = +obja.votes + 1;
-                obja.rating = +obja.rates / +obja.votes;
 
-                const a = await TaskUser.update({ rate: obja }, {
-                    where: {
 
-                        userId: userId,
-                        TasksId: taskId
+            let obja = JSON.parse(JSON.stringify(taskUser.rate));
+            obja.rates = +obja.rates + rate;
+            obja.votes = +obja.votes + 1;
+            obja.rating = +obja.rates / +obja.votes;
 
-                    }
-                });
-                //task.addUsers(user, { through: { predicted: predict } })
-                return res.json(task) //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Пользователь успешно добавлен')
-            }
-            const a = await TaskUser.update({ predicted: predict }, {
+            const a = await TaskUser.update({ rate: obja }, {
                 where: {
 
                     userId: userId,
@@ -140,7 +154,9 @@ class TasksController {
                 }
             });
             //task.addUsers(user, { through: { predicted: predict } })
-            return res.json(a) //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Пользователь успешно добавлен')
+            return res.json(task) //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Пользователь успешно добавлен')
+
+
 
         } else {
             return next(ApiError.badRequest('Такого пользователя или проекта не существует'))
@@ -185,39 +201,39 @@ class TasksController {
         } else {
             const count = await user.countTasks();
             const userTasks = await user.getTasks({
-            limit: limit,
-            offset: offset,
-            distinct: true,
-            include: [{
-                model: Users,
-                as: 'users',
-                required: false,
-                attributes: ['id', 'name', 'email'],
-                through: { attributes: ['predicted', 'rate'] }
-            }],
-        });
-        const commitment = userTasks.map((item)=>{
-            return (
-                {
-                    "item": item.name,
-                    "user": "Обязательства",
-                    "score": item.TaskUser.predicted
-                }
-            )
-        })
-        const execution = userTasks.map((item)=>{
-            return (
-                {
-                    "item": item.name,
-                    "user": "Фактическое исполнение",
-                    "score": item.TaskUser.rate
-                }
-            )
-        })
-        const result = [...commitment, ...execution]
-        return res.json(result);
+                limit: limit,
+                offset: offset,
+                distinct: true,
+                include: [{
+                    model: Users,
+                    as: 'users',
+                    required: false,
+                    attributes: ['id', 'name', 'email'],
+                    through: { attributes: ['predicted', 'rate'] }
+                }],
+            });
+            const commitment = userTasks.map((item) => {
+                return (
+                    {
+                        "item": item.name,
+                        "user": "Обязательства",
+                        "score": item.TaskUser.predicted
+                    }
+                )
+            })
+            const execution = userTasks.map((item) => {
+                return (
+                    {
+                        "item": item.name,
+                        "user": "Фактическое исполнение",
+                        "score": item.TaskUser.rate.rating
+                    }
+                )
+            })
+            const result = [...commitment, ...execution]
+            return res.json(result);
         }
-        
+
 
     }
 }

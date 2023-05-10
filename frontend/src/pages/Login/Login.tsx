@@ -70,11 +70,17 @@ export const Login: FC = () => {
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	  }, [isSubmitSuccessful]);
-	
+	  
+	  const user = JSON.parse(localStorage.getItem('user') || "{}")
+	  React.useEffect(() => {
+		if (user.token) {
+			navigate("/profile")
+		}
+	  },[])
+
 	  const onSubmitHandler: SubmitHandler<LoginInput> = (values) => {
 		// ? Executing the loginUser Mutation
 		loginUser(values);
-		
 	  };
 
 	return (
