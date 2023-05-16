@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { Button, Input, Pagination, Progress, Select, Space, Table, TableColumnsType } from 'antd';
+import { Button, Input, Pagination, Select, Space, Table, TableColumnsType } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useDeleteUserMutation, useGetAllUsersQuery, useUpdateUserMutation } from '../../redux/api/userApi';
 
@@ -121,7 +121,7 @@ const expandedColumns: TableColumnsType<any> = [
 		if (isSuccess) {
 			refetch()
 		}
-	}, [ isSuccess])
+	}, [isSuccess])
 
 	return (
 		<div style={{ width: "100%", maxWidth: "1024px", height: "100%", padding: "32px 32px", background: "#FFFFFF", borderRadius: "32px", boxShadow: "28px 0px 50.4863px rgba(0, 0, 0, 0.17)", justifyContent: "center",  }}>
