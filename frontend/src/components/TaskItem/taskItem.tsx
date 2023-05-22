@@ -1,7 +1,6 @@
 import avatar from "../../assets/Avatar.png";
-import { Avatar, Button, Card, Col, Divider, InputNumber, List, Modal, Popconfirm, Progress, Row } from 'antd';
-import { ProjectTwoTone, UserOutlined } from '@ant-design/icons'
-import { Link } from "react-router-dom";
+import { Avatar, Button, Card, Col, Divider, InputNumber, Modal, Popconfirm, Row } from 'antd';
+import { ProjectTwoTone } from '@ant-design/icons';
 import React, { useState } from "react";
 import { useAddUserMutation } from "../../redux/api/taskApi";
 import Table, { ColumnsType } from "antd/es/table";
@@ -65,7 +64,7 @@ export const TaskItem = ({ item, refetch }) => {
 			onCancel={() => setModalOpen(false)}
 		>
 			<Divider />
-			<p>Тип задачи: {item.typ}</p>
+			<p>Тип задачи: {item.typ === "INVAR" ? "Инвариантный": "Вариативный"}</p>
 			<p>Время закрытия задачи: {item.stop}</p>
 			<pre>Описание задачи: {item.description }</pre>
 			<p>Пользователи находящиеся в задаче:</p>
@@ -95,7 +94,7 @@ export const TaskItem = ({ item, refetch }) => {
 				</Col>
 				<Col flex="auto"></Col>
 				<Col flex="auto" ><Button style={{ width: "100%" }} type="default" onClick={() => setModalOpen(true)}>
-					Открыть карточку проекта
+					Открыть карточку задачи
 				</Button></Col>
 			</Row>
 		</Modal>

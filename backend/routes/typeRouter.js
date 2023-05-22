@@ -22,6 +22,8 @@ router.post('/delUserProj', typeController.del_user_project)
 router.get('/getUserProjects', typeController.getUserProjects)
 router.get('/getUserTasks', tasksController.getUserTasks)
 
+router.get('/getStat', tasksController.getStatsTasks)
+
 
 
 module.exports = router

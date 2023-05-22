@@ -50,12 +50,12 @@ export const Tasks = () => {
 			<FloatButton
 				icon={<PlusOutlined />}
 				shape="circle"
-				tooltip={<div>Создать проект</div>}
+				tooltip={<div>Создать задачу</div>}
 				onClick={() => setModalOpen(true)}
 			/>
 			<Modal
 				width={1024}
-				title="Создание проекта"
+				title="Создание задачи"
 				centered
 				open={modalOpen}
 				footer={null}
@@ -67,11 +67,11 @@ export const Tasks = () => {
 					layout="vertical"
 					onFinish={onFinishModal}
 				>
-					<Form.Item label="Название проекта:" name="name" rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]} >
+					<Form.Item label="Название задачи:" name="name" rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]} >
 						<Input />
 					</Form.Item>
 
-					<Form.Item label="Дата окончания:" name="stop" rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]} >
+					<Form.Item label="Дата окончания задачи:" name="stop" rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]} >
 						<DatePicker />
 					</Form.Item>
 
@@ -86,7 +86,7 @@ export const Tasks = () => {
 					</Form.Item>
 
 					<Form.Item
-						label="Описание проекта:"
+						label="Описание задачи:"
 						name="description"
 						rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]}
 					>

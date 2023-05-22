@@ -19,7 +19,7 @@ interface DataType {
 
 const columns: ColumnsType<DataType> = [
 	{
-		title: 'ФИО',
+		title: 'Имя задачи',
 		dataIndex: 'name',
 		key: 'name',
 		render: (text) => <a>{text}</a>,
@@ -128,7 +128,7 @@ export const Profile: FC = (props) => {
 				{
 					label: 'Статистика',
 					key: '4',
-					children: <Radar style={{height: "600px"}} {...config} />,
+					children: <>{isSuccess && data.length>=6?<Radar style={{height: "600px"}} {...config} /> : 'Добавьте больше задач чтобы видеть статистику'}</>,
 				},
 			]}
 		/>

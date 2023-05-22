@@ -57,7 +57,7 @@ const columns: ColumnsType<DataType> = [
 ];
 
 const expandedColumns: TableColumnsType<any> = [
-	{ title: 'Имя проекта', dataIndex: 'name', key: 'name' },
+	{ title: 'Имя задачи', dataIndex: 'name', key: 'name' },
 	{
 	  title: 'Прогноз',
 	  dataIndex: 'TaskUser',

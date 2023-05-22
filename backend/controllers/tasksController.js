@@ -57,7 +57,7 @@ class TasksController {
 
             return res.json('Проект успешно создан');
         } catch (error) {
-            return next(ApiError.internal('Ошибка создания проекта', error));
+            return next(ApiError.internal('Ошибка создания задачи', error));
         }
     }
 
@@ -233,6 +233,45 @@ class TasksController {
             const result = [...commitment, ...execution]
             return res.json(result);
         }
+
+
+    }
+
+    async getStatsTasks(req, res) {
+
+
+
+        const tasks = await Tasks.findAll({
+            distinct: true,
+            include: [{
+                model: Users,
+                as: 'users',
+                required: false,
+                attributes: ['id', 'name'],
+                through: { attributes: ['predicted', 'rate'] }
+            }],
+        });
+        let result = [];
+
+        tasks.forEach((task, i) => {
+            const commitment = task.users.map((item) => {
+                return {
+                    "item": task.name,
+                    "user": `[План] ${item.name}`,
+                    "score": item.TaskUser.predicted,
+                };
+            });
+            const execution = task.users.map((item) => {
+                return {
+                    "item": task.name,
+                    "user": `[Факт] ${item.name}`,
+                    "score": item.TaskUser.rate.rating,
+                };
+            });
+            result.push(...commitment, ...execution);
+        });
+        return res.json(result);
+
 
 
     }
