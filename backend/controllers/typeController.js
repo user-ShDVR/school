@@ -10,12 +10,9 @@ class TypeController {
 
         let { name, description, userId, workers } = req.body;
         const {f} = req.files
-        
-        let fileName = uuid.v4()
+        let fileName = uuid.v4() + path.parse(f.name).ext;
         f.mv(path.resolve(__dirname, '..', 'static', fileName))
         
-
-
         const isExists = await Contests.findOne({ where: { name } })
 
         if (isExists) {
