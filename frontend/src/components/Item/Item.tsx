@@ -4,6 +4,7 @@ import { ProjectTwoTone, UserOutlined } from '@ant-design/icons'
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useAddUserMutation } from "../../redux/api/projectsApi";
+import { toast } from "react-toastify";
 const { Meta } = Card;
 
 export const Item = ({ item, refetch }) => {
@@ -11,7 +12,13 @@ export const Item = ({ item, refetch }) => {
 	const [modalOpen, setModalOpen] = useState(false);
 	const onClick = (contentId: string) => {
 		addUser({contentId})
-		refetch()
+		.then(()=>{
+			refetch()
+		})
+		.catch((error) => {
+			toast.error(error.data.message);
+		});
+
 	};
 	return <>
 
@@ -37,8 +44,8 @@ export const Item = ({ item, refetch }) => {
 			<Divider />
 			<p>Автор проекта: {item.users[0].name}</p>
 			<p>Квота людей: {item.users.length}/{item.workers}</p>
-			<p>Средняя оценка экспертов: </p>
-			<pre>Описание проекта: {item.description}</pre>
+			<p>Средняя оценка экспертов: {item.rating.rating == 0 ? "Нету" : item.rating.rating}</p>
+			<p>Описание проекта: <pre>{item.description}</pre></p>
 			<p>Пользователи находящиеся в проекте:</p>
 			<List
         dataSource={item.users}
@@ -59,9 +66,11 @@ export const Item = ({ item, refetch }) => {
 					Присоединится
 				</Button></Col>
 				<Col flex="auto"></Col>
-				<Col flex="auto" ><Button style={{ width: "100%" }} type="default" onClick={() => setModalOpen(true)}>
+				<Col flex="auto" >
+					<Link target="_blank" to={`http://localhost:5000/${item.fileName}`}><Button style={{ width: "100%" }} type="default" onClick={() => setModalOpen(true)}>
 					Открыть карточку проекта
-				</Button></Col>
+				</Button></Link>
+					</Col>
 			</Row>
 		</Modal>
 	</>;

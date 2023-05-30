@@ -45,7 +45,7 @@ const Contests = sequelize.define('Contests', {
   },
   rating: {
     type: DataTypes.JSON,
-    defaultValue: "{rates: 0, votes: 0, rating: 0}"
+    defaultValue: {rates: 0, votes: 0, rating: 0}
   },
   fileName: {type: DataTypes.STRING, allowNull: false},
 });

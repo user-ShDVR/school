@@ -39,11 +39,12 @@ export const projectsApi = createApi({
         createProject: builder.mutation({
             query(data) {
                 const user = JSON.parse(localStorage.getItem('user'))
-                data['userId'] = user.user.id;
+		        data.append("userId", user.user.id)
                 return {
                     url: 'project',
                     method: 'POST',
                     body: data,
+                    formData: true,
                 }
             }
         }),

@@ -38,7 +38,6 @@ class TypeController {
             offset: offset,
             distinct: true,
             include: [{
-
                 model: Users,
                 as: 'users',
                 required: false,
@@ -165,9 +164,6 @@ class TypeController {
             res.json(error)
         }
     }
-
-
-
 }
 
 module.exports = new TypeController()

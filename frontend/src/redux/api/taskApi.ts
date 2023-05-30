@@ -43,6 +43,7 @@ export const taskApi = createApi({
                     url: 'task',
                     method: 'POST',
                     body: data,
+                    formData: true,
                 }
             }
         }),

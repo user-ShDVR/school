@@ -4,6 +4,7 @@ import { ProjectTwoTone } from '@ant-design/icons';
 import React, { useState } from "react";
 import { useAddUserMutation } from "../../redux/api/taskApi";
 import Table, { ColumnsType } from "antd/es/table";
+import { toast } from "react-toastify";
 const { Meta } = Card;
 
 interface DataType {
@@ -40,8 +41,13 @@ export const TaskItem = ({ item, refetch }) => {
 	const [modalOpen, setModalOpen] = useState(false);
 	const [predict, setPredict] = useState< string | number | null>(100);
 	const onClick = (contentId: string) => {
-		 addUser({ contentId, predict })
-		refetch()
+		addUser({ contentId, predict })
+		.then(()=>{
+			refetch()
+		})
+		.catch((error) => {
+			toast.error(error.data.message);
+		});
 	};
 	return <>
 
@@ -66,7 +72,7 @@ export const TaskItem = ({ item, refetch }) => {
 			<Divider />
 			<p>Тип задачи: {item.typ === "INVAR" ? "Инвариантный": "Вариативный"}</p>
 			<p>Время закрытия задачи: {item.stop}</p>
-			<pre>Описание задачи: {item.description }</pre>
+			<p>Описание задачи: <pre>{item.description }</pre></p>
 			<p>Пользователи находящиеся в задаче:</p>
 			<Table size='small' columns={columns} dataSource={item.users} rowKey="id"/>
 			<Row gutter={16} justify={"space-between"}>
