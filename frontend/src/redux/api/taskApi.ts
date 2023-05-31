@@ -78,6 +78,13 @@ export const taskApi = createApi({
                 };
             },
         }),
+        getStatTasks: builder.query<any, any>({
+            query() {
+                return {
+                    url: 'getStat',
+                };
+            },
+        }),
     })
 })
 
@@ -86,6 +93,7 @@ export const {
     useAddUserMutation,
     useAddRateMutation,
     useGetAllUserTasksQuery,
+    useGetStatTasksQuery,
     useGetAllTasksQuery,
     useGetOneQuery,
 } = taskApi;

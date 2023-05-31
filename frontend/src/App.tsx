@@ -15,6 +15,7 @@ import { useRefreshUserMutation } from './redux/api/authApi';
 import { MyProjects } from './pages/MyProjects';
 import { Users } from './pages/Users';
 import { RatingPage } from './pages/Rating';
+import { Statistics } from './pages/Statistics';
 const { Header, Content } = Layout;
 
 
@@ -56,6 +57,7 @@ const App: React.FC = () => {
               <Route path="my-projects" element={<MyProjects />} />  
               <Route path="projects" element={<Projects />} />
               <Route path="profile" element={<Profile />} />
+              <Route path="stat" element={<Statistics />} />
               <Route path="/rating/:taskId" element={<RatingPage />} />
             </Routes>
           </Content>

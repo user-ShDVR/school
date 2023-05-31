@@ -1,25 +1,39 @@
 import avatar from "../../assets/Avatar.png";
-import { Avatar, Button, Card, Col, Divider, List, Modal, Row } from 'antd';
+import { Avatar, Button, Card, Col, Divider, InputNumber, List, Modal, Popconfirm, Row } from 'antd';
 import { ProjectTwoTone, UserOutlined } from '@ant-design/icons'
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useAddUserMutation } from "../../redux/api/projectsApi";
 import { toast } from "react-toastify";
+import { useAddRateMutation } from "../../redux/api/taskApi";
 const { Meta } = Card;
 
 export const Item = ({ item, refetch }) => {
-	const [addUser, { isError, error }] = useAddUserMutation();
+	const [addUser, { isError: isErrorUser, error: errorUser }] = useAddUserMutation();
+	const [addRate, { isError: isErrorRate, error: errorRate }] = useAddRateMutation();
+	const [rate, setRate] = useState< string | number | null>(100);
 	const [modalOpen, setModalOpen] = useState(false);
 	const onClick = (contentId: string) => {
 		addUser({contentId})
 		.then(()=>{
 			refetch()
 		})
-		.catch((error) => {
-			toast.error(error.data.message);
+		.catch((errorUser) => {
+			toast.error(errorUser.data.message);
 		});
 
 	};
+
+	const onRateClick = (contentId: string) => {
+		addRate({ contentId, rate })
+		.then(()=>{
+			refetch()
+		})
+		.catch((errorRate) => {
+			toast.error(errorRate.data.message);
+		});
+	};
+
 	return <>
 
 		<Card
@@ -65,7 +79,28 @@ export const Item = ({ item, refetch }) => {
 				<Col flex="auto"><Button style={{ width: "100%" }} type="primary" onClick={() => onClick(item.id)}>
 					Присоединится
 				</Button></Col>
-				<Col flex="auto"></Col>
+				<Col flex="auto">
+					<Popconfirm
+						title="Последний шаг"
+						placement="bottom"
+						onConfirm={()=> onRateClick(item.id)}
+						description={<>
+						<p>Пожалуйста оцените проект!</p>
+							<InputNumber
+								value={rate}
+								onChange={setRate}
+								min={0}
+								max={100}
+								formatter={(value) => `${value}`}
+							/>
+						</>
+						}
+					>
+						<Button style={{ width: "100%" }} type="primary" >
+							Оценить проект
+						</Button>
+					</Popconfirm>
+				</Col>
 				<Col flex="auto" >
 					<Link target="_blank" to={`http://localhost:5000/${item.fileName}`}><Button style={{ width: "100%" }} type="default" onClick={() => setModalOpen(true)}>
 					Открыть карточку проекта

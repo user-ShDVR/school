@@ -59,6 +59,17 @@ export const projectsApi = createApi({
                 }
             }
         }),
+        addRate: builder.mutation({
+            query(data) {
+                const user = JSON.parse(localStorage.getItem('user'))
+                data['userId'] = user.user.id;
+                return {
+                    url: 'add_rate_in_project',
+                    method: 'POST',
+                    body: data,
+                }
+            }
+        }),
     })
 })
 

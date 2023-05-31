@@ -101,15 +101,18 @@ const expandedColumns: TableColumnsType<any> = [
 	const handleApplyChanges = (id) => {
 		
 		const { name, email, role } = editedData[id];
-		updateUser({ id, name, email, role });
-		
-		setEditedData({});
-		refetch();
+		updateUser({ id, name, email, role })
+		.then(()=>{
+			setEditedData({});
+			refetch();
+		})
 	};
 
 	const handleDeleteChanges = (id) => {
-		deleteUser({id});
-		refetch();
+		deleteUser({id})
+		.then(()=>{
+			refetch();
+		})
 	};
 
 	const onChange = (page) => {

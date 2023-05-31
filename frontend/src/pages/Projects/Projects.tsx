@@ -1,4 +1,4 @@
-import { Button, Col, FloatButton, Form, Input, InputNumber, Modal, Pagination, PaginationProps, Row, Upload, notification } from "antd";
+import { Button, Col, FloatButton, Form, Input, InputNumber, Modal, Pagination, PaginationProps, Row, Upload, UploadProps, message, notification } from "antd";
 import { Item } from "../../components/Item";
 import { useCreateProjectMutation, useGetAllProjectsQuery } from "../../redux/api/projectsApi";
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
@@ -50,6 +50,21 @@ export const Projects = () => {
 		}
 	}, [isError, isSuccess])
 
+	const props: UploadProps = {
+		beforeUpload: (file) => {
+		  const isAllowType = file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'application/msword' || file.type === 'text/plain' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.type === 'application/pdf' ;
+		  const isLt200M = file.size / 1024 / 1024 < 1;
+		  if (!isAllowType) {
+			message.error(`Этот загрузчик поддерживает только: .png, .jpeg, .doc, .docx, .pdf форматы! `);
+			return Upload.LIST_IGNORE;
+		  }
+		  if (!isLt200M) {
+			message.error(`Размер файла не может превышать 200 мегабайт`);
+			return Upload.LIST_IGNORE;
+		  }
+		  return false;
+		},
+	  };
 
 	const normFile = (e) => {
 		if (Array.isArray(e)) {
@@ -114,7 +129,7 @@ export const Projects = () => {
 						valuePropName="file"
 						getValueFromEvent={normFile}
 						label="Фото товара" rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]} >
-						<Upload beforeUpload={() => false} maxCount={1} fileList={fileList} onChange={({ fileList }) => setFileList(fileList)}>
+						<Upload {...props}  maxCount={1} fileList={fileList} onChange={({ fileList }) => setFileList(fileList)}>
 							<Button icon={<UploadOutlined />}>Загрузить карточку проекта</Button>
 						</Upload>
 					</Form.Item>

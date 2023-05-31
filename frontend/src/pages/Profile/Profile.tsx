@@ -126,9 +126,14 @@ export const Profile: FC = (props) => {
 					children: <div> <Table size='middle' columns={columns} dataSource={isSuccessVar ? dataVar.rows : null} rowKey="id"/> </div>,
 				},
 				{
-					label: 'Статистика',
+					label: 'Инвариантная статистика ',
 					key: '4',
-					children: <>{isSuccess && data.length>=6?<Radar style={{height: "600px"}} {...config} /> : 'Добавьте больше задач чтобы видеть статистику'}</>,
+					children: <>{isSuccess && data.length>=6?<Radar style={{height: "500px"}} {...config} /> : 'Добавьте больше задач чтобы видеть статистику'}</>,
+				},
+				{
+					label: 'Вариативная статистика',
+					key: '5',
+					children: <>{isSuccess && data.length>=6?<Radar style={{height: "500px"}} {...config} /> : 'Добавьте больше задач чтобы видеть статистику'}</>,
 				},
 			]}
 		/>
