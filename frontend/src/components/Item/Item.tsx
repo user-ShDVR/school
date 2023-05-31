@@ -51,7 +51,7 @@ export const Item = ({ item, refetch }) => {
         dataSource={item.users}
         renderItem={(item: {id: number, name: string, }, index) => (
           <List.Item>
-            <List.Item.Meta
+			<List.Item.Meta
               avatar={
                 <Avatar shape="square" icon={<UserOutlined />} />
               }
