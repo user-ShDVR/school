@@ -3,9 +3,8 @@ import { Avatar, Button, Card, Col, Divider, InputNumber, List, Modal, Popconfir
 import { ProjectTwoTone, UserOutlined } from '@ant-design/icons'
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useAddUserMutation } from "../../redux/api/projectsApi";
+import { useAddRateMutation, useAddUserMutation } from "../../redux/api/projectsApi";
 import { toast } from "react-toastify";
-import { useAddRateMutation } from "../../redux/api/taskApi";
 const { Meta } = Card;
 
 export const Item = ({ item, refetch }) => {
@@ -24,8 +23,8 @@ export const Item = ({ item, refetch }) => {
 
 	};
 
-	const onRateClick = (contentId: string) => {
-		addRate({ contentId, rate })
+	const onRateClick = (contestId: string) => {
+		addRate({ contestId, rate })
 		.then(()=>{
 			refetch()
 		})
@@ -80,7 +79,7 @@ export const Item = ({ item, refetch }) => {
 					Присоединится
 				</Button></Col>
 				<Col flex="auto">
-					<Popconfirm
+					{<Popconfirm
 						title="Последний шаг"
 						placement="bottom"
 						onConfirm={()=> onRateClick(item.id)}
@@ -99,7 +98,7 @@ export const Item = ({ item, refetch }) => {
 						<Button style={{ width: "100%" }} type="primary" >
 							Оценить проект
 						</Button>
-					</Popconfirm>
+					</Popconfirm>}
 				</Col>
 				<Col flex="auto" >
 					<Link target="_blank" to={`http://localhost:5000/${item.fileName}`}><Button style={{ width: "100%" }} type="default" onClick={() => setModalOpen(true)}>

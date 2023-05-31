@@ -137,20 +137,14 @@ class UserController {
         const decoded = jwt.verify(token, process.env.SECRET_KEY)        
         let idshnik = decoded.id;
     
-        if(password) {
+        if(id == idshnik && password && name && email) {
             const hashPassword = await bcrypt.hash(password, 5)
+            const ok = await Users.findByPk(idshnik);
             await ok.update({name, email, password: hashPassword});
-
+            return res.json("Инфа обновлена")
         }
 
-        const ok = await Users.findByPk(idshnik);
-
-        await ok.update({name, email});
-
-        return res.json("Инфа обновлена")
-
-
-
+        return res.json("Ошибка")
     }
 
 
