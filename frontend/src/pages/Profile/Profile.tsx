@@ -7,6 +7,7 @@ import { logout, selectUser } from '../../redux/features/userSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useGetAllUserTasksQuery } from '../../redux/api/taskApi';
+import { useEditUserMutation, useRefreshUserMutation } from '../../redux/api/authApi';
 
 const { Paragraph } = Typography;
 
@@ -45,11 +46,11 @@ const columns: ColumnsType<DataType> = [
 
 
 export const Profile: FC = (props) => {
-	const { user } = useAppSelector(selectUser);
+	const { user, token } = useAppSelector(selectUser);
 	const dispatch = useDispatch()
 	const navigate = useNavigate();
 	const [isModalOpen, setIsModalOpen] = useState(false);
-
+	const [refreshUser, {isLoading, isSuccess: refreshSuccess, isError, error }] = useRefreshUserMutation();
 	const showModal = () => {
 		setIsModalOpen(true);
 	};
@@ -57,7 +58,8 @@ export const Profile: FC = (props) => {
 	const [currentINVAR, setCurrentINVAR] = useState(1);
 	const { data: dataVar, isSuccess: isSuccessVar, refetch: refetchVar } = useGetAllUserTasksQuery({ limit: '8', type: 'VAR', page: `${currentVAR}` })
 	const { data: dataINVAR, isSuccess: isSuccessINVAR, refetch: refetchINVAR } = useGetAllUserTasksQuery({ limit: '8', type: 'INVAR', page: `${currentINVAR}` })
-	const { data, isSuccess, refetch } = useGetAllUserTasksQuery({ limit: '1000', page: '1' })
+	const { data, isSuccess, refetch } = useGetAllUserTasksQuery({ limit: '1000', page: '1' });
+	const [editUser] = useEditUserMutation();
 	const onLogout = () => {
 		dispatch(logout())
 		navigate('/')
@@ -106,7 +108,12 @@ export const Profile: FC = (props) => {
 	};
 
 	function onFinish(values) {
-		console.log(values)
+		editUser(values)
+		.then(()=>{
+			refreshUser({token: token})
+			setIsModalOpen(false)
+		})
+
 	}
 
 	return <div style={{ width: "100%", maxWidth: "1024px", height: "100%", padding: "32px 32px", background: "#FFFFFF", borderRadius: "32px", boxShadow: "28px 0px 50.4863px rgba(0, 0, 0, 0.17)", justifyContent: "center" }}>
@@ -157,7 +164,7 @@ export const Profile: FC = (props) => {
 				autoComplete="off"
 			>
 				<Form.Item
-					label="Email"
+					label="Почта"
 					name="email"
 					rules={[{ required: true, message: 'Please input your username!' }]}
 				>
@@ -165,15 +172,15 @@ export const Profile: FC = (props) => {
 				</Form.Item>
 
 				<Form.Item
-					label="Username"
-					name="username"
+					label="ФИО"
+					name="name"
 					rules={[{ required: true, message: 'Please input your username!' }]}
 				>
 					<Input />
 				</Form.Item>
 
 				<Form.Item
-					label="Password"
+					label="Пароль"
 					name="password"
 					rules={[{ required: true, message: 'Please input your password!' }]}
 				>

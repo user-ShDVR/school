@@ -10,7 +10,7 @@ class TypeController {
     async create(req, res, next) {
 
         let { name, description, userId, workers } = req.body;
-        const {f} = req.files
+        const { f } = req.files
         let fileName = uuid.v4() + path.parse(f.name).ext;
         f.mv(path.resolve(__dirname, '..', 'static', fileName))
 
@@ -77,32 +77,48 @@ class TypeController {
         const contest = await Contests.findByPk(contestId)
 
         if (!contest) {
-            throw new Error('Такого проекта не существует')
+            return next(ApiError.badRequest('Такого проекта не существует'))
         }
         const user = await Users.findByPk(userId)
         if (!user) {
-            throw new Error('Такого пользователя не существует')
+            return next(ApiError.badRequest('Такого пользователя не существует'))
         }
-        const rating = await Rating.create({ userId: userId, contestsId: contestId, rate })
-        const votes = await Rating.count({ where: { contestsId: contestId } })
-        if (votes) {
-            const rates = await Rating.sum('rate', { where: { contestsId: contestId } })
-            rated = { rates, votes, rating: rates / votes }
-            const updateContest = await Contests.update({ rating: rated }, {
-                where: {
-                    id: contestId
-                }
-            })
-            res.json(updateContest)
-        } else {
-            rated = { rates: 0, votes: 0, rating: 0 }
-            const updateContest = await Contests.update({ rating }, {
-                where: {
-                    id: contestId
-                }
-            })
-            res.json(updateContest)
+
+
+        const isExists = await Rating.findOne({ where: { userId, contestsId: contestId  } })
+
+        if (isExists) {
+            return next(ApiError.badRequest('Оценка уже поставлена'))
         }
+        else {
+
+            const rating = await Rating.create({ userId: userId, contestsId: contestId, rate })
+            const votes = await Rating.count({ where: { contestsId: contestId } })
+
+            if (votes) {
+
+                const rates = await Rating.sum('rate', { where: { contestsId: contestId } })
+                rated = { rates, votes, rating: rates / votes }
+                const updateContest = await Contests.update({ rating: rated }, {
+                    where: {
+                        id: contestId
+                    }
+                })
+                res.json(updateContest)
+            } else {
+                rated = { rates: 0, votes: 0, rating: 0 }
+                const updateContest = await Contests.update({ rating }, {
+                    where: {
+
+                        id: contestId
+
+                    }
+                })
+                res.json(updateContest)
+            }
+
+        }
+
 
     }
 

@@ -3,6 +3,7 @@ import { LoginInput } from '../../pages/Login';
 import { RegisterInput } from '../../pages/Register';
 import { IGenericResponse, IUserState } from './types';
 import { setUser } from '../features/userSlice';
+import { RootState } from '../store';
 
 
 
@@ -10,12 +11,30 @@ export const authApi = createApi({
     reducerPath: 'authApi',
     baseQuery: fetchBaseQuery({
         baseUrl: `http://localhost:5000/api/user/`,
+        prepareHeaders: (headers, { getState, endpoint }) => {
+            const token = (getState() as RootState).userState.token;
+            if (token && endpoint == 'editUser') {
+              headers.set('Authorization', `Bearer ${token}`);
+            }
+            return headers;
+        },
     }),
     endpoints: (builder) => ({
         registerUser: builder.mutation<IGenericResponse, RegisterInput>({
             query(data) {
                 return {
                     url: 'registration',
+                    method: 'POST',
+                    body: data,
+                };
+            },
+        }),
+        editUser: builder.mutation({
+            query(data) {
+                const user = JSON.parse(localStorage.getItem('user'))
+		        data['id'] = user.user.id;
+                return {
+                    url: 'change_myself_inf_user',
                     method: 'POST',
                     body: data,
                 };
@@ -62,5 +81,6 @@ export const authApi = createApi({
 export const {
     useLoginUserMutation,
     useRegisterUserMutation,
+    useEditUserMutation,
     useRefreshUserMutation,
 } = authApi;
