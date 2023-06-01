@@ -156,7 +156,7 @@ export const Profile: FC = (props) => {
 
 	}
 
-	return <div style={{ width: "100%", maxWidth: "1024px", height: "85vh", padding: "32px 32px", background: "#FFFFFF", borderRadius: "32px", boxShadow: "28px 0px 50.4863px rgba(0, 0, 0, 0.17)", justifyContent: "center" }}>
+	return <div style={{ width: "100%", maxWidth: "1024px", height: "100%", padding: "32px 32px", background: "#FFFFFF", borderRadius: "32px", boxShadow: "28px 0px 50.4863px rgba(0, 0, 0, 0.17)", justifyContent: "center" }}>
 
 
 		<Tabs

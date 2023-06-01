@@ -78,22 +78,26 @@ export const Item = ({ item, refetch }) => {
 			<p>Пользователи находящиеся в проекте:</p>
 			<List
         dataSource={item.users}
-        renderItem={(item: {id: number, name: string, }, index) => (
+        renderItem={(item: {id: number, name: string, email: string}, index) => (
           <List.Item>
 			<List.Item.Meta
               avatar={
                 <Avatar shape="square" icon={<UserOutlined />} />
               }
-              title={<a target="_blank" rel="noreferrer" href="mailto:name@gmail.com">{item.name}</a>}
-              description="???"
+              title={item.name}
+              description={item.email}
             />
           </List.Item>
         )}
       />
 			<Row gutter={16} justify={"space-between"}>
-				<Col flex="auto"><Button style={{ width: "100%" }} type="primary" onClick={() => onClick(item.id)}>
+				<Col flex="auto">
+				{item.users.length >= item.workers ? <Button style={{ width: "100%" }} disabled type="primary"  onClick={() => onClick(item.id)}>
 					Присоединится
-				</Button></Col>
+				</Button> : <Button style={{ width: "100%" }} type="primary"  onClick={() => onClick(item.id)}>
+					Присоединится
+				</Button>}
+					</Col>
 				<Col flex="auto">
 					{user.role == 'EXPERT' ? <Popconfirm
 						title="Последний шаг"
