@@ -2,12 +2,15 @@ import avatar from "../../assets/Avatar.png";
 import { Avatar, Button, Card, Col, Divider, InputNumber, List, Modal, Popconfirm, Row } from 'antd';
 import { ProjectTwoTone, UserOutlined } from '@ant-design/icons'
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAddRateMutation, useAddUserMutation } from "../../redux/api/projectsApi";
 import { toast } from "react-toastify";
+import { useAppSelector } from "../../redux/hooks";
+import { selectUser } from "../../redux/features/userSlice";
 const { Meta } = Card;
 
 export const Item = ({ item, refetch }) => {
+	const { user } = useAppSelector(selectUser);
 	const [addUser, { isError: isErrorUser, error: errorUser }] = useAddUserMutation();
 	const [addRate, { isError: isErrorRate, error: errorRate }] = useAddRateMutation();
 	const [rate, setRate] = useState< string | number | null>(100);
@@ -17,10 +20,6 @@ export const Item = ({ item, refetch }) => {
 		.then(()=>{
 			refetch()
 		})
-		.catch((errorUser) => {
-			toast.error(errorUser.data.message);
-		});
-
 	};
 
 	const onRateClick = (contestId: string) => {
@@ -28,11 +27,28 @@ export const Item = ({ item, refetch }) => {
 		.then(()=>{
 			refetch()
 		})
-		.catch((errorRate) => {
-			toast.error(errorRate.data.message);
-		});
 	};
+	useEffect(() => {
+		if (isErrorUser) {
+			toast.error((errorUser as any).data.message, {
+				position: 'top-right',
+			  });
+		
+		}
 
+	  }, [isErrorUser]);
+	  useEffect(() => {
+		if (isErrorRate) {
+			toast.error((errorRate as any).data.message, {
+				position: 'top-right',
+			  });
+		
+		}
+
+	  }, [isErrorRate]);
+	  if (!user) {
+		return null;
+	}
 	return <>
 
 		<Card
@@ -79,7 +95,7 @@ export const Item = ({ item, refetch }) => {
 					Присоединится
 				</Button></Col>
 				<Col flex="auto">
-					{<Popconfirm
+					{user.role == 'EXPERT' ? <Popconfirm
 						title="Последний шаг"
 						placement="bottom"
 						onConfirm={()=> onRateClick(item.id)}
@@ -92,13 +108,13 @@ export const Item = ({ item, refetch }) => {
 								max={100}
 								formatter={(value) => `${value}`}
 							/>
-						</>
+						</> 
 						}
 					>
 						<Button style={{ width: "100%" }} type="primary" >
 							Оценить проект
 						</Button>
-					</Popconfirm>}
+					</Popconfirm> : null}
 				</Col>
 				<Col flex="auto" >
 					<Link target="_blank" to={`http://localhost:5000/${item.fileName}`}><Button style={{ width: "100%" }} type="default" onClick={() => setModalOpen(true)}>

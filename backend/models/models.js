@@ -84,8 +84,8 @@ const Tasks = sequelize.define('Tasks', {
     type: DataTypes.ENUM('INVAR', 'VAR'),
     defaultValue: 'VAR'
   },
-  stop: { type: DataTypes.STRING } //изменить на дату
-
+  stop: { type: DataTypes.STRING }, //изменить на дату
+  fileName: {type: DataTypes.STRING, allowNull: false},
 })
 
 

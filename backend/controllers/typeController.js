@@ -17,7 +17,7 @@ class TypeController {
         const isExists = await Contests.findOne({ where: { name } })
 
         if (isExists) {
-            return next(ApiError.badRequest('Проект c таким именем уже существует'))
+            return next(ApiError.internal('Проект c таким именем уже существует'))
         }
 
         const contest = await Contests.create({ name, description, workers, fileName });
@@ -30,8 +30,6 @@ class TypeController {
 
 
     async getAll(req, res) {
-
-
         let { limit, page } = req.query;
         page = page || 1;
         limit = limit || 8;
@@ -52,20 +50,25 @@ class TypeController {
         return res.json(types)
     }
 
-    async add_user(req, res) {
+    async add_user(req, res, next) {
 
         let { userId, contentId } = req.body;
         const user = await Users.findAll({ where: { id: userId } });
         const contest = await Contests.findOne({ where: { id: contentId } });
+        const contestuser = await ContestUser.findAll({ where: { contestsId: contentId } });
 
         if (user && contest) {
-
-            await contest.addUsers(user);
-            return res.json(contest) //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Пользователь успешно добавлен')
+            if(contest.workers >= contestuser.length+1){
+                await contest.addUsers(user);
+                return res.json(contest) //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Пользователь успешно добавлен')
+            }
+            else{
+                return next(ApiError.internal('Количество пользователей превышено'))
+            }
 
         } else {
 
-            return next(ApiError.badRequest('Такого пользователя или проекта не существует'))
+            return next(ApiError.internal('Такого пользователя или проекта не существует'))
 
         }
     }
@@ -77,18 +80,18 @@ class TypeController {
         const contest = await Contests.findByPk(contestId)
 
         if (!contest) {
-            return next(ApiError.badRequest('Такого проекта не существует'))
+            return next(ApiError.internal('Такого проекта не существует'))
         }
         const user = await Users.findByPk(userId)
         if (!user) {
-            return next(ApiError.badRequest('Такого пользователя не существует'))
+            return next(ApiError.internal('Такого пользователя не существует'))
         }
 
 
         const isExists = await Rating.findOne({ where: { userId, contestsId: contestId  } })
 
         if (isExists) {
-            return next(ApiError.badRequest('Оценка уже поставлена'))
+            return next(ApiError.internal('Оценка уже поставлена'))
         }
         else {
 
@@ -134,8 +137,7 @@ class TypeController {
         });
 
         if (!user) {
-
-            throw new Error('Такого пользователя не существует');
+            return next(ApiError.internal('Такого пользователя не существует'))
         }
         const count = await user.countContests();
         const userContests = await user.getContests({
@@ -168,16 +170,17 @@ class TypeController {
             Rating.destroy({ where: { contestsId: id } });
             res.json('Ok')
         } catch (error) {
-            res.json(error)
+            console.log(error)
+            return next(ApiError.internal('Ошибка удаление проекта'))
         }
     }
 
     async del_user_project(req, res) {
 
-        const { user_id } = req.body;
+        const { userId, contestsId } = req.body;
         try {
-            ContestUser.destroy({ where: { userId: user_id } });
-            Rating.destroy({ where: { userId: user_id } });
+            ContestUser.destroy({ where: { userId: userId, contestsId: contestsId } });
+            Rating.destroy({ where: { userId: userId, contestsId: contestsId } });
             res.json('Ok')
         } catch (error) {
             res.json(error)

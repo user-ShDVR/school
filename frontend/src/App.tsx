@@ -45,7 +45,7 @@ const App: React.FC = () => {
   return (
     <>
 
-      <Layout style={{ height: '100vh', overflow: 'scroll' }} className="layout">
+      <Layout style={{ height: '100%', overflow: 'scroll' }} className="layout">
         <HeaderComponent />
         <Layout>
           <Content style={{ padding: '20px 30px', display: "flex", justifyContent: "center" }}>

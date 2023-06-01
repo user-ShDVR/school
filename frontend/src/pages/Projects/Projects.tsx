@@ -123,6 +123,8 @@ export const Projects = () => {
 					>
 						<TextArea
 							autoSize={{ minRows: 4, maxRows: 8 }}
+							maxLength={2000}
+							showCount
 						/>
 					</Form.Item>
 					<Form.Item name="file"

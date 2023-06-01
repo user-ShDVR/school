@@ -38,7 +38,7 @@ export const taskApi = createApi({
         createTask: builder.mutation({
             query(data) {
                 const user = JSON.parse(localStorage.getItem('user'))
-                data['userId'] = user.user.id;
+		        data.append("userId", user.user.id)
                 return {
                     url: 'task',
                     method: 'POST',
@@ -77,6 +77,19 @@ export const taskApi = createApi({
                     params: { limit, page, type, userId: user.user.id },
                 };
             },
+            keepUnusedDataFor: 1,
+        }),
+        getAllUserStat: builder.query<any, {type: string; }>({
+            query(arg) {
+                const { type } = arg;
+                const user = JSON.parse(localStorage.getItem('user'))
+                 
+                return {
+                    url: 'getUserStat',
+                    params: { type, userId: user.user.id },
+                };
+            },
+            keepUnusedDataFor: 1,
         }),
         getStatTasks: builder.query<any, any>({
             query() {
@@ -84,6 +97,7 @@ export const taskApi = createApi({
                     url: 'getStat',
                 };
             },
+            keepUnusedDataFor: 1,
         }),
     })
 })
@@ -92,6 +106,7 @@ export const {
     useCreateTaskMutation,
     useAddUserMutation,
     useAddRateMutation,
+    useGetAllUserStatQuery,
     useGetAllUserTasksQuery,
     useGetStatTasksQuery,
     useGetAllTasksQuery,

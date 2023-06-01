@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { useAddUserMutation } from "../../redux/api/taskApi";
 import Table, { ColumnsType } from "antd/es/table";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 const { Meta } = Card;
 
 interface DataType {
@@ -99,9 +100,9 @@ export const TaskItem = ({ item, refetch }) => {
 					</Popconfirm>
 				</Col>
 				<Col flex="auto"></Col>
-				<Col flex="auto" ><Button style={{ width: "100%" }} type="default" onClick={() => setModalOpen(true)}>
+				<Col flex="auto" ><Link target="_blank" to={`http://localhost:5000/${item.fileName}`}><Button style={{ width: "100%" }} type="default" onClick={() => setModalOpen(true)}>
 					Открыть карточку задачи
-				</Button></Col>
+				</Button></Link></Col>
 			</Row>
 		</Modal>
 	</>;

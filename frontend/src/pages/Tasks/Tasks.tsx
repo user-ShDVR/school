@@ -1,7 +1,7 @@
-import { Button, Col, DatePicker, FloatButton, Form, Input, InputNumber, Modal, Pagination, PaginationProps, Row, Select, notification } from "antd";
+import { Button, Col, DatePicker, FloatButton, Form, Input, InputNumber, Modal, Pagination, PaginationProps, Row, Select, Upload, UploadProps, message, notification } from "antd";
 import { TaskItem } from "../../components/TaskItem";
 import { useCreateTaskMutation, useGetAllTasksQuery } from "../../redux/api/taskApi";
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import React, { useEffect, useState } from "react";
 import TextArea from "antd/es/input/TextArea";
 import { NotificationPlacement } from "antd/es/notification/interface";
@@ -15,6 +15,7 @@ export const Tasks = () => {
 	const [modalOpen, setModalOpen] = useState(false);
 	const [current, setCurrent] = useState(1);
 	const [form] = Form.useForm();
+	const [fileList, setFileList] = useState([]);
 	const [api, contextHolder] = notification.useNotification();
 	const { data,isSuccess, refetch } = useGetAllTasksQuery({ limit: '8', page: `${current}` })
 	const [createProject, {isSuccess: isCreateSuccess, isError, error }] = useCreateTaskMutation();
@@ -23,8 +24,22 @@ export const Tasks = () => {
 		refetch()
 	};
 	const onFinishModal = (values: any) => {
-		createProject(values)
-		setModalOpen(false)
+
+		const formData = new FormData();
+		formData.append("f", fileList[0]?.originFileObj);
+		formData.append("name", values.name);
+		formData.append("description", values.description);
+		formData.append("typ", values.typ);
+		formData.append("stop", values.stop);
+		
+		createProject(formData)
+		  .then(() => {
+			setModalOpen(false);
+			refetch();
+		  })
+		  .catch((error) => {
+			toast.error(error.data.message);
+		  });
 	};
 
 	React.useEffect(() => {
@@ -35,6 +50,30 @@ export const Tasks = () => {
 			refetch()
 		}
 	}, [isError, isCreateSuccess])
+
+	const props: UploadProps = {
+		beforeUpload: (file) => {
+		  const isAllowType = file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'application/msword' || file.type === 'text/plain' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.type === 'application/pdf' ;
+		  const isLt200M = file.size / 1024 / 1024 < 1;
+		  if (!isAllowType) {
+			message.error(`Этот загрузчик поддерживает только: .png, .jpeg, .doc, .docx, .pdf форматы! `);
+			return Upload.LIST_IGNORE;
+		  }
+		  if (!isLt200M) {
+			message.error(`Размер файла не может превышать 200 мегабайт`);
+			return Upload.LIST_IGNORE;
+		  }
+		  return false;
+		},
+	  };
+
+	const normFile = (e) => {
+		if (Array.isArray(e)) {
+			return e.slice(-1);
+		}
+		return e && e.fileList.slice(-1);
+	};
+
 	return <div style={{ maxWidth: 1024 }}>
 		<Row justify="space-around" style={{ width: "100%" }} gutter={[16, 16]}>
 			{isSuccess ?
@@ -91,9 +130,18 @@ export const Tasks = () => {
 						rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]}
 					>
 						<TextArea
-
+							maxLength={2000}
+							showCount
 							autoSize={{ minRows: 4, maxRows: 8 }}
 						/>
+					</Form.Item>
+					<Form.Item name="file"
+						valuePropName="file"
+						getValueFromEvent={normFile}
+						label="Фото товара" rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]} >
+						<Upload {...props}  maxCount={1} fileList={fileList} onChange={({ fileList }) => setFileList(fileList)}>
+							<Button icon={<UploadOutlined />}>Загрузить карточку проекта</Button>
+						</Upload>
 					</Form.Item>
 					<Form.Item>
 						<Button htmlType="submit" type="primary">Создать</Button>

@@ -21,6 +21,7 @@ router.post('/delUserProj', typeController.del_user_project)
 
 router.get('/getUserProjects', typeController.getUserProjects)
 router.get('/getUserTasks', tasksController.getUserTasks)
+router.get('/getUserStat', tasksController.getUserStat)
 
 router.get('/getStat', tasksController.getStatsTasks)
 

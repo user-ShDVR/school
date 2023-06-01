@@ -127,10 +127,10 @@ const expandedColumns: TableColumnsType<any> = [
 	}, [isSuccess])
 
 	return (
-		<div style={{ width: "100%", maxWidth: "1024px", height: "100%", padding: "32px 32px", background: "#FFFFFF", borderRadius: "32px", boxShadow: "28px 0px 50.4863px rgba(0, 0, 0, 0.17)", justifyContent: "center",  }}>
+		<div style={{ width: "100%", maxWidth: "1024px", height: "86vh", padding: "32px 32px", background: "#FFFFFF", borderRadius: "32px", boxShadow: "28px 0px 50.4863px rgba(0, 0, 0, 0.17)", justifyContent: "center",  }}>
 			{isSuccess ?
 				<>
-					<Table size='large' scroll={{ y: 650, x:'max-content' }} pagination={false} expandable={{ expandedRowRender: (record) => <Table columns={expandedColumns} dataSource={record.Tasks} pagination={false} />, defaultExpandedRowKeys: ['0'] }} columns={columns} dataSource={data.rows} rowKey="id" />
+					<Table size='middle' scroll={{ y: 500, x:'max-content' }} pagination={false} expandable={{ expandedRowRender: (record) => <Table columns={expandedColumns} dataSource={record.Tasks} pagination={false} />, defaultExpandedRowKeys: ['0'] }} columns={columns} dataSource={data.rows} rowKey="id" />
 					<Pagination defaultPageSize={8} pageSize={8} showSizeChanger={false} current={current} onChange={onChange} total={isSuccess ? data.count : 0} />
 				</>
 				:
