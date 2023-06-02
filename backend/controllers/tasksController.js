@@ -1,5 +1,6 @@
-const { Tasks, Users, TaskUser } = require('../models/models');
+const { Tasks, Users, TaskUser, CheckRatingTask } = require('../models/models');
 const ApiError = require('../error/ApiError');
+const jwt = require('jsonwebtoken')
 const uuid = require('uuid');
 const path = require('path');
 const cron = require('node-cron');
@@ -12,15 +13,21 @@ const transporter = nodemailer.createTransport({
         pass: 'plbhwtubkzdlwluc'
     }
 });
+async function sendEmail(task_id) {
 
-function sendEmail(task_id, to_exp) {
+    let experts = await Users.findAll({ where: { role: "EXPERT" } }); 
+    let all_exp = []
+    console.log(1)
+    for(let i of experts) {all_exp.push(i.email)}
+    console.log(1)
+    console.log(all_exp)
     const mailOptions = {
         from: 'savelyev_av@edu.surgu.ru',
-        to: to_exp,
+        to: all_exp,
         subject: 'Привет',
         text: `Вам необходимо поставить рейтинг по такой ссылке https://host.com/rating?taskId=${task_id}`
     };
-
+    console.log(1)
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             console.log(error);
@@ -54,12 +61,9 @@ class TasksController {
             console.log(d.getMonth() + 1)
             console.log(d.getDate())
 
-            const experts = await Users.findAll({ where: { role: 'EXPERT' } });
-
-
             try {
-                const schedule = cron.schedule(`00 00 8 ${d.getDate()} ${d.getMonth() + 1} *`, () => {
-                    sendEmail(task.id, experts)
+                const schedule = cron.schedule(`00 01 18 ${d.getDate()} ${d.getMonth() + 1} *`, () => {
+                    sendEmail(task.id)
                 });
                 schedule.start();
 
@@ -135,27 +139,41 @@ class TasksController {
 
     }
 
-    async createRate(req, res, next) {
+    async createRate(req, res) {
         let { userId, taskId, rate } = req.body;
+
+        const token = req.headers.authorization.split(' ')[1] // Bearer asfasnfkajsfnjk
+        const decoded = jwt.verify(token, process.env.SECRET_KEY)        
+        let idshnik = decoded.id;
+        console.log(decoded.id)
+        console.log(idshnik)
         const task1 = await Tasks.findByPk(taskId)
 
+
+
         if (!task1) {
-            return next(ApiError.internal('Задача не найдена в БД'))
+            return res.json('task не найден в БД')
         }
         const user1 = await Users.findByPk(userId)
         if (!user1) {
-            return next(ApiError.internal('Пользователь не найден в БД'))
+            return res.json('User не найден в БД')
         }
+        
         const user = await Users.findOne({ where: { id: userId } });
         const task = await Tasks.findOne({ where: { id: taskId } });
+        const task_check = await CheckRatingTask.findOne({ where: { userId: userId, expertId: idshnik } });
+
+
 
         if (user && task) {
 
+            if(!task_check){
 
+            const ok = await CheckRatingTask.create({ userId, expertId: idshnik });
             const taskUser = await TaskUser.findOne({ where: { userId: userId, TasksId: taskId } }) //из вот этой функи достаем это -> {rates: 0, votes: 0, rating: 0}
 
-
             let obja = JSON.parse(JSON.stringify(taskUser.rate));
+
             obja.rates = +obja.rates + rate;
             obja.votes = +obja.votes + 1;
             obja.rating = +obja.rates / +obja.votes;
@@ -170,9 +188,20 @@ class TasksController {
             });
             //task.addUsers(user, { through: { predicted: predict } })
             return res.json(task) //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Пользователь успешно добавлен')
-        } else {
-            return next(ApiError.internal('Такого пользователя или проекта не существует'))
+        
         }
+        else{
+
+            return res.json("Вы уже поставили оценку")
+
+        }
+
+        } else {
+            return next(ApiError.badRequest('Такого пользователя или проекта не существует'))
+
+        }
+
+
     }
 
     async getUserTasks(req, res, next) {

@@ -130,7 +130,7 @@ export const Projects = () => {
 					<Form.Item name="file"
 						valuePropName="file"
 						getValueFromEvent={normFile}
-						label="Фото товара" rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]} >
+						label="Карточка проекта" rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]} >
 						<Upload {...props}  maxCount={1} fileList={fileList} onChange={({ fileList }) => setFileList(fileList)}>
 							<Button icon={<UploadOutlined />}>Загрузить карточку проекта</Button>
 						</Upload>

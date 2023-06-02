@@ -37,7 +37,7 @@ const Contests = sequelize.define('Contests', {
     allowNull: false
   },
   description: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(2000),
     allowNull: false
   },
   workers: {
@@ -79,7 +79,7 @@ const Tasks = sequelize.define('Tasks', {
 
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   name: { type: DataTypes.STRING },
-  description: { type: DataTypes.STRING },
+  description: { type: DataTypes.STRING(2000) },
   typ: {
     type: DataTypes.ENUM('INVAR', 'VAR'),
     defaultValue: 'VAR'
@@ -88,6 +88,19 @@ const Tasks = sequelize.define('Tasks', {
   fileName: {type: DataTypes.STRING, allowNull: false},
 })
 
+const CheckRatingTask = sequelize.define('CheckRatingTask', {
+
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+
+  expertId: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+
+  }
+})
 
 const TaskUser = sequelize.define('TaskUser', {
   predicted: {
@@ -183,5 +196,6 @@ module.exports = {
   ContestUser,
   Rating,
   TaskUser,
+  CheckRatingTask,
 
 }

@@ -138,9 +138,9 @@ export const Tasks = () => {
 					<Form.Item name="file"
 						valuePropName="file"
 						getValueFromEvent={normFile}
-						label="Фото товара" rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]} >
+						label="Карточка задачи" rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]} >
 						<Upload {...props}  maxCount={1} fileList={fileList} onChange={({ fileList }) => setFileList(fileList)}>
-							<Button icon={<UploadOutlined />}>Загрузить карточку проекта</Button>
+							<Button icon={<UploadOutlined />}>Загрузить карточку задачи</Button>
 						</Upload>
 					</Form.Item>
 					<Form.Item>

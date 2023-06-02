@@ -99,7 +99,7 @@ export const Item = ({ item, refetch }) => {
 				</Button>}
 					</Col>
 				<Col flex="auto">
-					{user.role == 'EXPERT' ? <Popconfirm
+					{user.role == 'EXPERT' || user.role == 'ADMIN' ? <Popconfirm
 						title="Последний шаг"
 						placement="bottom"
 						onConfirm={()=> onRateClick(item.id)}
