@@ -17,10 +17,7 @@ async function sendEmail(task_id) {
 
     let experts = await Users.findAll({ where: { role: "EXPERT" } }); 
     let all_exp = []
-    console.log(1)
     for(let i of experts) {all_exp.push(i.email)}
-    console.log(1)
-    console.log(all_exp)
     const mailOptions = {
         from: 'savelyev_av@edu.surgu.ru',
         to: all_exp,
@@ -58,8 +55,6 @@ class TasksController {
             const user = await Users.findAll({ where: { id: userId } });
             await task.addUser(user);
             let d = new Date(stop)
-            console.log(d.getMonth() + 1)
-            console.log(d.getDate())
 
             try {
                 const schedule = cron.schedule(`00 01 18 ${d.getDate()} ${d.getMonth() + 1} *`, () => {
@@ -145,8 +140,6 @@ class TasksController {
         const token = req.headers.authorization.split(' ')[1] // Bearer asfasnfkajsfnjk
         const decoded = jwt.verify(token, process.env.SECRET_KEY)        
         let idshnik = decoded.id;
-        console.log(decoded.id)
-        console.log(idshnik)
         const task1 = await Tasks.findByPk(taskId)
 
 
