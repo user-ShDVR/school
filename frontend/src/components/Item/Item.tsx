@@ -121,7 +121,7 @@ export const Item = ({ item, refetch }) => {
 					</Popconfirm> : null}
 				</Col>
 				<Col flex="auto" >
-					<Link target="_blank" to={`http://localhost:5000/${item.fileName}`}><Button style={{ width: "100%" }} type="default" onClick={() => setModalOpen(true)}>
+					<Link target="_blank" to={`http://45.12.73.150:5000/${item.fileName}`}><Button style={{ width: "100%" }} type="default" onClick={() => setModalOpen(true)}>
 					Открыть карточку проекта
 				</Button></Link>
 					</Col>

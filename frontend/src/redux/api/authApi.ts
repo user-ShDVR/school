@@ -10,7 +10,7 @@ import { RootState } from '../store';
 export const authApi = createApi({
     reducerPath: 'authApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: `http://localhost:5000/api/user/`,
+        baseUrl: `http://45.12.73.150:5000/api/user/`,
         prepareHeaders: (headers, { getState, endpoint }) => {
             const token = (getState() as RootState).userState.token;
             if (token && endpoint == 'editUser') {
