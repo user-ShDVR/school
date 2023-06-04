@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Button, Checkbox, Form, Input, message } from 'antd';
+import { Button, Checkbox, Form, Input, Select, message } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
@@ -27,7 +27,7 @@ const registerSchema = object({
 
 export type RegisterInput = TypeOf<typeof registerSchema>;
 
-export const Register: FC = () => {
+const Register= (props: {modal: any}) => {
 	const [messageApi, contextHolder] = message.useMessage();
 	const [form] = Form.useForm();
 	const methods = useForm<RegisterInput>({
@@ -39,9 +39,6 @@ export const Register: FC = () => {
 	};
 
 	const [registerUser, { isLoading, isSuccess, error, isError }] = useRegisterUserMutation();
-
-	const navigate = useNavigate();
-
 	const {
 		reset,
 		handleSubmit,
@@ -52,7 +49,7 @@ export const Register: FC = () => {
 	React.useEffect(() => {
 		if (isSuccess) {
 			toast.success('User registered successfully');
-			navigate('/');
+			props.modal()
 		}
 
 		if (isError) {
@@ -79,191 +76,181 @@ export const Register: FC = () => {
 
 	}, [isSubmitSuccessful]);
 
-	const user = JSON.parse(localStorage.getItem('user') || "{}")
-	React.useEffect(() => {
-	  if (user.token) {
-		  navigate("/profile")
-	  }
-	},[])
-
 	return (
-		<div style={{ display: 'flex', margin: "0px auto", width: "100%", maxWidth: "800px", height: '90%', background: "#FFFFFF", borderRadius: "32px", boxShadow: "28px 0px 50.4863px rgba(0, 0, 0, 0.17)", textAlign: 'center', justifyContent: 'center' }}>
-			{contextHolder}
-			<Form
-				style={{ maxWidth: "300px", minWidth: "270px", margin: "auto 0px" }}
-				scrollToFirstError
-				onFinish={handleSubmit(onSubmitHandler)}
-				form={form}
-				layout="vertical"
-			>
-				<Controller
-					name="name"
-					control={control}
-					render={({
-						field: { onChange, onBlur, value, ref },
-						fieldState: { error },
-					}) => {
-						return (
-							<>
-								<Form.Item name="name" label="Имя" rules={[
+
+		<Form
+			style={{ margin: "auto 0px" }}
+			scrollToFirstError
+			onFinish={handleSubmit(onSubmitHandler)}
+			form={form}
+			layout="vertical"
+		>
+			<Controller
+				name="name"
+				control={control}
+				render={({
+					field: { onChange, onBlur, value, ref },
+					fieldState: { error },
+				}) => {
+					return (
+						<>
+							<Form.Item name="name" label="Имя" rules={[
+								{
+									required: true,
+									message: 'Пожалуйста введите ФИО!',
+								},
+							]}>
+								<Input
+									onChange={onChange}
+									onBlur={onBlur}
+									value={value}
+									ref={ref}
+									placeholder="Введите свое ФИО"
+								/>
+							</Form.Item>
+						</>
+					);
+				}}
+			/>
+			<Controller
+				name="email"
+				control={control}
+				render={({
+					field: { onChange, onBlur, value, ref },
+					fieldState: { error },
+				}) => {
+					return (
+						<>
+							<Form.Item name="email" label="Почта" rules={[
+								{
+									type: 'email',
+									message: 'The input is not valid E-mail!',
+								},
+								{
+									required: true,
+									message: 'Пожалуйста введите почту!',
+								},
+							]}>
+								<Input
+									onChange={onChange}
+									onBlur={onBlur}
+									value={value}
+									ref={ref}
+									placeholder="Введите свою почту"
+								/>
+							</Form.Item>
+						</>
+					);
+				}}
+			/>
+
+			<Controller
+				name="role"
+				control={control}
+				render={({
+					field: { onChange, onBlur, value, ref },
+					fieldState: { error },
+				}) => {
+					return (
+						<>
+							<Form.Item label="Роль">
+								<Select
+									onChange={onChange}
+									onBlur={onBlur}
+									value={value}
+									ref={ref}
+									options={[
+										{ value: 'USER', label: 'Педагог' },
+										{ value: 'EXPERT', label: 'Эксперт' },
+										{ value: 'ADMIN', label: 'Администратор' },
+									]}
+								/>
+							</Form.Item>
+						</>
+					);
+				}}
+			/>
+
+			<Controller
+				name="password"
+				control={control}
+				render={({
+					field: { onChange, onBlur, value, ref },
+					fieldState: { error },
+				}) => {
+					return (
+						<>
+							<Form.Item
+								name="password"
+								label="Пароль"
+								rules={[
 									{
 										required: true,
-										message: 'Пожалуйста введите ФИО!',
+										message: 'Пожалуйста введите пароль!',
 									},
-								]}>
-									<Input
-										onChange={onChange}
-										onBlur={onBlur}
-										value={value}
-										ref={ref}
-										placeholder="Введите свое ФИО"
-									/>
-								</Form.Item>
-							</>
-						);
-					}}
-				/>
-				<Controller
-					name="email"
-					control={control}
-					render={({
-						field: { onChange, onBlur, value, ref },
-						fieldState: { error },
-					}) => {
-						return (
-							<>
-								<Form.Item name="email" label="Почта" rules={[
-									{
-										type: 'email',
-										message: 'The input is not valid E-mail!',
-									},
+								]}
+								hasFeedback
+							>
+								<Input.Password
+									onChange={onChange}
+									onBlur={onBlur}
+									value={value}
+									ref={ref}
+									placeholder="Придумайте пароль"
+									iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+								/>
+							</Form.Item>
+						</>
+					);
+				}}
+			/>
+
+			<Controller
+				name="passwordConfirm"
+				control={control}
+				render={({
+					field: { onChange, onBlur, value, ref },
+					fieldState: { error },
+				}) => {
+					return (
+						<>
+							<Form.Item
+								name="confirm"
+								label="Подтвердите пароль"
+								rules={[
 									{
 										required: true,
-										message: 'Пожалуйста введите почту!',
+										message: 'Пожалуйста подтвердите пароль!',
 									},
-								]}>
-									<Input
-										onChange={onChange}
-										onBlur={onBlur}
-										value={value}
-										ref={ref}
-										placeholder="Введите свою почту"
-									/>
-								</Form.Item>
-							</>
-						);
-					}}
-				/>
-
-				<Controller
-					name="role"
-					control={control}
-					render={({
-						field: { onChange, onBlur, value, ref },
-						fieldState: { error },
-					}) => {
-						return (
-							<>
-								<Form.Item label="Должность">
-									<Input
-										onChange={onChange}
-										onBlur={onBlur}
-										value={value}
-										ref={ref}
-										placeholder="Введите свою должность"
-									/>
-								</Form.Item>
-							</>
-						);
-					}}
-				/>
-
-				<Controller
-					name="password"
-					control={control}
-					render={({
-						field: { onChange, onBlur, value, ref },
-						fieldState: { error },
-					}) => {
-						return (
-							<>
-								<Form.Item
-									name="password"
-									label="Пароль"
-									rules={[
-										{
-											required: true,
-											message: 'Пожалуйста введите пароль!',
+									({ getFieldValue }) => ({
+										validator(_, value) {
+											if (!value || getFieldValue('password') === value) {
+												return Promise.resolve();
+											}
+											return Promise.reject(new Error('Эти пароли не совпадают'));
 										},
-									]}
-									hasFeedback
-								>
-									<Input.Password
-										onChange={onChange}
-										onBlur={onBlur}
-										value={value}
-										ref={ref}
-										placeholder="Придумайте пароль"
-										iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-									/>
-								</Form.Item>
-							</>
-						);
-					}}
-				/>
+									}),
+								]}
+								hasFeedback
+							>
+								<Input.Password
+									onChange={onChange}
+									onBlur={onBlur}
+									value={value}
+									ref={ref}
+									placeholder="Повторите пароль"
+									iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+								/>
+							</Form.Item>
+						</>
+					);
+				}}
+			/>
+			<Form.Item>
+				<Button htmlType='submit' style={{ maxWidth: "300px", minWidth: "100%" }} >Зарегистрироваться</Button>
+			</Form.Item>
 
-				<Controller
-					name="passwordConfirm"
-					control={control}
-					render={({
-						field: { onChange, onBlur, value, ref },
-						fieldState: { error },
-					}) => {
-						return (
-							<>
-								<Form.Item
-									name="confirm"
-									label="Подтвердите пароль"
-									rules={[
-										{
-											required: true,
-											message: 'Пожалуйста подтвердите пароль!',
-										},
-										({ getFieldValue }) => ({
-											validator(_, value) {
-												if (!value || getFieldValue('password') === value) {
-													return Promise.resolve();
-												}
-												return Promise.reject(new Error('Эти пароли не совпадают'));
-											},
-										}),
-									]}
-									hasFeedback
-								>
-									<Input.Password
-										onChange={onChange}
-										onBlur={onBlur}
-										value={value}
-										ref={ref}
-										placeholder="Повторите пароль"
-										iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-									/>
-								</Form.Item>
-							</>
-						);
-					}}
-				/>
-
-				<Form.Item>
-					<Checkbox style={{ maxWidth: "300px", minWidth: "100%" }} >Соглашаетесь с обработкой данных</Checkbox>
-					<Checkbox style={{ maxWidth: "300px", minWidth: "100%", margin: "0px" }} >Соглашаетесь с <Link to={"/rules"}>правилами</Link> сервиса</Checkbox>
-				</Form.Item>
-				<Form.Item>
-					<Button htmlType='submit' style={{ maxWidth: "300px", minWidth: "100%" }} >Зарегистрироваться</Button>
-				</Form.Item>
-
-			</Form>
-
-		</div>
+		</Form>
 	)
 };
+export default Register;

@@ -4,7 +4,7 @@ import RatingTable from '../../components/RatingTable/RatingTable';
 import { Spin } from 'antd';
 import { useGetOneQuery } from '../../redux/api/taskApi';
 
-export const RatingPage = () => {
+const RatingPage = () => {
   const { taskId } = useParams();
   const { data, isFetching } = useGetOneQuery({taskId});
 
@@ -23,3 +23,4 @@ export const RatingPage = () => {
     </div>
   );
 };
+export default RatingPage;

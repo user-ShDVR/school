@@ -45,7 +45,7 @@ const columns: ColumnsType<DataType> = [
 
 
 
-export const Profile: FC = (props) => {
+const Profile: FC = (props) => {
 	const { user, token } = useAppSelector(selectUser);
 	const dispatch = useDispatch()
 	const navigate = useNavigate();
@@ -166,9 +166,8 @@ export const Profile: FC = (props) => {
 					label: 'Информация',
 					key: '1',
 					children: <Card title={user.name} extra={<><Button onClick={showModal} type="primary">Редактировать</Button> <Button onClick={onLogout} type="dashed">Выйти</Button></>} bordered={true} style={{ width: "100%", marginBottom: "32px" }}>
-						<Paragraph>Права пользователя: {user.role}</Paragraph>
+						<Paragraph>Права пользователя: {user.role == "ADMIN" ? "Администратор" : "Пользователь"} </Paragraph>
 						{/* <Paragraph>Должность: </Paragraph> */}
-						<Paragraph>О себе: Если ты всегда будешь делать завтрашнюю работу сегодня, то последний день твоей жизни будет совершенно свободным. </Paragraph>
 					</Card>,
 				},
 				{
@@ -240,3 +239,4 @@ export const Profile: FC = (props) => {
 	</div>;
 
 };
+export default Profile;

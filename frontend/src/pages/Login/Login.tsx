@@ -21,7 +21,7 @@ const loginSchema = object({
 
 export type LoginInput = TypeOf<typeof loginSchema>;
 
-export const Login: FC = () => {
+const Login: FC = () => {
 	const [form] = Form.useForm();
 
 	const methods = useForm<LoginInput>({
@@ -84,7 +84,7 @@ export const Login: FC = () => {
 	  };
 
 	return (
-		<div style={{ display: 'flex', margin: "0px auto", width: "100%", maxWidth: "800px", height: '80%', background: "#FFFFFF", borderRadius: "32px", boxShadow: "28px 0px 50.4863px rgba(0, 0, 0, 0.17)", textAlign: 'center', justifyContent: 'center' }}>
+		<div style={{ display: 'flex', margin: "0px auto", width: "100%", maxWidth: "800px", height: '94vh', background: "#FFFFFF", borderRadius: "32px", boxShadow: "28px 0px 50.4863px rgba(0, 0, 0, 0.17)", textAlign: 'center', justifyContent: 'center' }}>
 			<Form
 				style={{ maxWidth: "300px", minWidth: "270px", margin: "auto 0px" }}
 				form={form}
@@ -162,13 +162,8 @@ export const Login: FC = () => {
 				<Form.Item>
 					<Button htmlType="submit" style={{ maxWidth: "300px", minWidth: "100%" }} type="primary">Войти</Button>
 				</Form.Item>
-				<Divider style={{ color: "#C2C2C2" }} >или</Divider>
-
-				<Form.Item>
-					<Link to={"/register"}><Button style={{ maxWidth: "300px", minWidth: "100%" }} >Зарегистрироваться</Button></Link>
-
-				</Form.Item>
 			</Form>
 		</div>
 	)
 };
+export default Login;

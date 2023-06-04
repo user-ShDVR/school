@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 
 
 
-export const Projects = () => {
+const Projects = () => {
 
 	const [modalOpen, setModalOpen] = useState(false);
 	const [current, setCurrent] = useState(1);
@@ -147,3 +147,4 @@ export const Projects = () => {
 
 	</div>;
 };
+export default Projects;

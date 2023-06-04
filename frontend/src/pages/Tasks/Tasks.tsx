@@ -6,12 +6,13 @@ import React, { useEffect, useState } from "react";
 import TextArea from "antd/es/input/TextArea";
 import { NotificationPlacement } from "antd/es/notification/interface";
 import { toast } from "react-toastify";
+import { useAppSelector } from "../../redux/hooks";
+import { selectUser } from "../../redux/features/userSlice";
 
 
 
-
-export const Tasks = () => {
-
+ const Tasks = () => {
+	const { user } = useAppSelector(selectUser);
 	const [modalOpen, setModalOpen] = useState(false);
 	const [current, setCurrent] = useState(1);
 	const [form] = Form.useForm();
@@ -73,6 +74,9 @@ export const Tasks = () => {
 		}
 		return e && e.fileList.slice(-1);
 	};
+	if (!user) {
+		return null
+	}
 
 	return <div style={{ maxWidth: 1024 }}>
 		<Row justify="space-around" style={{ width: "100%" }} gutter={[16, 16]}>
@@ -86,12 +90,12 @@ export const Tasks = () => {
 				}) :
 				null}
 
-			<FloatButton
+			{user.role === "ADMIN" ? <FloatButton
 				icon={<PlusOutlined />}
 				shape="circle"
 				tooltip={<div>Создать задачу</div>}
 				onClick={() => setModalOpen(true)}
-			/>
+			/> : null}
 			<Modal
 				width={1024}
 				title="Создание задачи"
@@ -155,3 +159,4 @@ export const Tasks = () => {
 
 	</div>;
 };
+export default Tasks;
