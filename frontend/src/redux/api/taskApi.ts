@@ -7,7 +7,7 @@ import { RootState } from '../store';
 export const taskApi = createApi({
     reducerPath: 'taskApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: `http://45.12.73.150:5000/api/`,
+        baseUrl: `http://localhost:5000/api/`,
         prepareHeaders: (headers, { getState }) => {
             const token = (getState() as RootState).userState.token;
             if (token) {
@@ -67,6 +67,15 @@ export const taskApi = createApi({
                 }
             }
         }),
+        deleteTask: builder.mutation({
+            query(data) {
+                return {
+                    url: 'delTask',
+                    method: 'POST',
+                    body: data,
+                }
+            }
+        }),
         getAllUserTasks: builder.query<any, { limit: string; page: string; type?: string; }>({
             query(arg) {
                 const { limit, page, type } = arg;
@@ -92,9 +101,11 @@ export const taskApi = createApi({
             keepUnusedDataFor: 1,
         }),
         getStatTasks: builder.query<any, any>({
-            query() {
+            query(arg) {
+                const { type, name } = arg;
                 return {
                     url: 'getStat',
+                    params: { type, name },
                 };
             },
             keepUnusedDataFor: 1,
@@ -105,6 +116,7 @@ export const taskApi = createApi({
 export const {
     useCreateTaskMutation,
     useAddUserMutation,
+    useDeleteTaskMutation,
     useAddRateMutation,
     useGetAllUserStatQuery,
     useGetAllUserTasksQuery,

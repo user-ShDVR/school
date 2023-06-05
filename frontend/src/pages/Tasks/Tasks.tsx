@@ -11,15 +11,15 @@ import { selectUser } from "../../redux/features/userSlice";
 
 
 
- const Tasks = () => {
+const Tasks = () => {
 	const { user } = useAppSelector(selectUser);
 	const [modalOpen, setModalOpen] = useState(false);
 	const [current, setCurrent] = useState(1);
 	const [form] = Form.useForm();
 	const [fileList, setFileList] = useState([]);
 	const [api, contextHolder] = notification.useNotification();
-	const { data,isSuccess, refetch } = useGetAllTasksQuery({ limit: '8', page: `${current}` })
-	const [createProject, {isSuccess: isCreateSuccess, isError, error }] = useCreateTaskMutation();
+	const { data, isSuccess, refetch } = useGetAllTasksQuery({ limit: '8', page: `${current}` })
+	const [createProject, { isSuccess: isCreateSuccess, isError, error }] = useCreateTaskMutation();
 	const onChange = (page) => {
 		setCurrent(page);
 		refetch()
@@ -27,20 +27,21 @@ import { selectUser } from "../../redux/features/userSlice";
 	const onFinishModal = (values: any) => {
 
 		const formData = new FormData();
+		const date = (new Date(values.stop, 4, 31)).toUTCString();
 		formData.append("f", fileList[0]?.originFileObj);
 		formData.append("name", values.name);
 		formData.append("description", values.description);
 		formData.append("typ", values.typ);
-		formData.append("stop", values.stop);
-		
+		formData.append("stop", date);
+
 		createProject(formData)
-		  .then(() => {
-			setModalOpen(false);
-			refetch();
-		  })
-		  .catch((error) => {
-			toast.error(error.data.message);
-		  });
+			.then(() => {
+				setModalOpen(false);
+				refetch();
+			})
+			.catch((error) => {
+				toast.error(error.data.message);
+			});
 	};
 
 	React.useEffect(() => {
@@ -54,19 +55,19 @@ import { selectUser } from "../../redux/features/userSlice";
 
 	const props: UploadProps = {
 		beforeUpload: (file) => {
-		  const isAllowType = file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'application/msword' || file.type === 'text/plain' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.type === 'application/pdf' ;
-		  const isLt200M = file.size / 1024 / 1024 < 1;
-		  if (!isAllowType) {
-			message.error(`Этот загрузчик поддерживает только: .png, .jpeg, .doc, .docx, .pdf форматы! `);
-			return Upload.LIST_IGNORE;
-		  }
-		  if (!isLt200M) {
-			message.error(`Размер файла не может превышать 200 мегабайт`);
-			return Upload.LIST_IGNORE;
-		  }
-		  return false;
+			const isAllowType = file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'application/msword' || file.type === 'text/plain' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.type === 'application/pdf';
+			const isLt200M = file.size / 1024 / 1024 < 1;
+			if (!isAllowType) {
+				message.error(`Этот загрузчик поддерживает только: .png, .jpeg, .doc, .docx, .pdf форматы! `);
+				return Upload.LIST_IGNORE;
+			}
+			if (!isLt200M) {
+				message.error(`Размер файла не может превышать 200 мегабайт`);
+				return Upload.LIST_IGNORE;
+			}
+			return false;
 		},
-	  };
+	};
 
 	const normFile = (e) => {
 		if (Array.isArray(e)) {
@@ -84,7 +85,7 @@ import { selectUser } from "../../redux/features/userSlice";
 				data.rows.map((item) => {
 					return (
 						<Col style={{ width: "320px" }} key={item.name} xs={{ span: 16 }} sm={{ span: 12 }} md={{ span: 8 }} lg={{ span: 6 }} xl={{ span: 6 }} >
-							<TaskItem key={item.id} item={item} refetch={refetch} />
+							<TaskItem key={item.id} user={user.role} item={item} refetch={refetch} />
 						</Col>
 					);
 				}) :
@@ -114,8 +115,12 @@ import { selectUser } from "../../redux/features/userSlice";
 						<Input />
 					</Form.Item>
 
-					<Form.Item label="Дата окончания задачи:" name="stop" rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]} >
-						<DatePicker />
+					<Form.Item label="Год окончания задачи:" name="stop" rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]} >
+						<InputNumber
+							defaultValue={2024}
+							min={2024}
+							max={2099}
+						/>
 					</Form.Item>
 
 					<Form.Item label="Тип задачи:" name="typ" rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]} >
@@ -143,7 +148,7 @@ import { selectUser } from "../../redux/features/userSlice";
 						valuePropName="file"
 						getValueFromEvent={normFile}
 						label="Карточка задачи" rules={[{ required: true, message: 'Пожалуйста заполните поле!' }]} >
-						<Upload {...props}  maxCount={1} fileList={fileList} onChange={({ fileList }) => setFileList(fileList)}>
+						<Upload {...props} maxCount={1} fileList={fileList} onChange={({ fileList }) => setFileList(fileList)}>
 							<Button icon={<UploadOutlined />}>Загрузить карточку задачи</Button>
 						</Upload>
 					</Form.Item>

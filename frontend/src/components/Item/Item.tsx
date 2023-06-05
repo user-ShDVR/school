@@ -1,9 +1,10 @@
 import avatar from "../../assets/Avatar.png";
 import { Avatar, Button, Card, Col, Divider, InputNumber, List, Modal, Popconfirm, Row } from 'antd';
-import { ProjectTwoTone, UserOutlined } from '@ant-design/icons'
+import { ProjectTwoTone, UserOutlined } from '@ant-design/icons';
+import mainProjectLogo from '../../assets/Проект.png';
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useAddRateMutation, useAddUserMutation } from "../../redux/api/projectsApi";
+import { useAddRateMutation, useAddUserMutation, useDeleteProjMutation, useDeleteUserProjMutation } from "../../redux/api/projectsApi";
 import { toast } from "react-toastify";
 import { useAppSelector } from "../../redux/hooks";
 import { selectUser } from "../../redux/features/userSlice";
@@ -13,6 +14,8 @@ export const Item = ({ item, refetch }) => {
 	const { user } = useAppSelector(selectUser);
 	const [addUser, { isError: isErrorUser, error: errorUser }] = useAddUserMutation();
 	const [addRate, { isError: isErrorRate, error: errorRate }] = useAddRateMutation();
+	const [delProj] = useDeleteProjMutation();
+	const [delUserProj] = useDeleteUserProjMutation();
 	const [rate, setRate] = useState< string | number | null>(100);
 	const [modalOpen, setModalOpen] = useState(false);
 	const onClick = (contentId: string) => {
@@ -27,6 +30,18 @@ export const Item = ({ item, refetch }) => {
 		.then(()=>{
 			refetch()
 		})
+	};
+	const onDelete = (id: string) => {
+		delProj({id})
+			.then(() => {
+				refetch()
+			})
+	};
+	const onUserDelete = (userId: number) => {
+		delUserProj({userId: userId, contestsId: item.id})
+			.then(() => {
+				refetch()
+			})
 	};
 	useEffect(() => {
 		if (isErrorUser) {
@@ -49,18 +64,57 @@ export const Item = ({ item, refetch }) => {
 	  if (!user) {
 		return null;
 	}
+
+const DeleteUserButton = (id) => {
+	return (<>
+		{user.role === "ADMIN" ? 
+			
+				<Popconfirm
+					key={id.id}
+					title="Удаление"
+					placement="bottom"
+					onConfirm={() => onUserDelete(id.id)}
+					description={<>
+						<p>Вы точно хотите удалить этого пользователя?</p>
+					</>
+					}
+				>
+					<Button type="link" >Удалить</Button>
+				</Popconfirm> 
+			 : null}
+			</>
+	)
+}
+
 	return <>
 
 		<Card
 			style={{ width: 240 }}
-			cover={<ProjectTwoTone style={{ fontSize: '230px', color: '#08c' }} />}
+			cover={<img src={mainProjectLogo}/>}
 		>
 			<Meta title={item.name} />
-			Автор: {item.users[0].name}<br />
-			Квота: {item.users.length}/{item.workers}<br />
+			Автор: {item.users[0]?.name}<br />
+			Квота: {item.users?.length}/{item.workers}<br />
 			<Button style={{ width: "100%" }} type="primary" onClick={() => setModalOpen(true)}>
 				Открыть
-			</Button>
+			</Button>{user.role === "ADMIN" ? 
+			<>
+				<br />
+				<br />
+				<Popconfirm
+					title="Удаление"
+					placement="bottom"
+					onConfirm={() => onDelete(item.id)}
+					description={<>
+						<p>Вы точно хотите удалить этот проект?</p>
+					</>
+					}
+				>
+					<Button style={{ width: "100%", color: "black" }} type="dashed">
+						Удалить
+					</Button>
+				</Popconfirm> 
+			</> : null}
 		</Card>
 		<Modal
 			width={1024}
@@ -71,15 +125,17 @@ export const Item = ({ item, refetch }) => {
 			onCancel={() => setModalOpen(false)}
 		>
 			<Divider />
-			<p>Автор проекта: {item.users[0].name}</p>
-			<p>Квота людей: {item.users.length}/{item.workers}</p>
+			<p>Автор проекта: {item.users[0]?.name}</p>
+			<p>Квота людей: {item.users?.length}/{item.workers}</p>
 			<p>Средняя оценка экспертов: {item.rating.rating == 0 ? "Нету" : item.rating.rating}</p>
 			<p>Описание проекта: <pre>{item.description}</pre></p>
 			<p>Пользователи находящиеся в проекте:</p>
 			<List
-        dataSource={item.users}
+        dataSource={item?.users}
         renderItem={(item: {id: number, name: string, email: string}, index) => (
-          <List.Item>
+          <List.Item
+		  actions={[<DeleteUserButton id={item.id}/>]}
+		  >
 			<List.Item.Meta
               avatar={
                 <Avatar shape="square" icon={<UserOutlined />} />

@@ -36,9 +36,6 @@ async function sendEmail(task_id) {
 }
 
 class TasksController {
-
-
-
     async create(req, res, next) {
         try {
             const { name, description, typ, userId, stop } = req.body;
@@ -50,14 +47,14 @@ class TasksController {
             if (isExists) {
                 return next(ApiError.badRequest('Проект с таким именем уже существует'));
             }
-
+            
             const task = await Tasks.create({ name, description, typ, stop, fileName }, { returning: true });
             const user = await Users.findAll({ where: { id: userId } });
             await task.addUser(user);
-            let d = new Date(stop)
-
+            let d = new Date(stop);
+            console.log(d.getDay())
             try {
-                const schedule = cron.schedule(`00 01 18 ${d.getDate()} ${d.getMonth() + 1} *`, () => {
+                const schedule = cron.schedule(`00 00 8 31 5 ${d.getDay()}`, () => {
                     sendEmail(task.id)
                 });
                 schedule.start();
@@ -197,6 +194,28 @@ class TasksController {
 
     }
 
+    async del_task(req, res) {
+        const { TasksId } = req.body;
+        try {
+            Tasks.destroy({ where: { id: TasksId } });
+            TaskUser.destroy({ where: { TasksId: TasksId } });
+            res.json('Ok')
+        } catch (error) {
+            res.json(error)
+        }
+    }
+
+    async del_user_task(req, res) {
+
+        const { user_id, TasksId } = req.body;
+        try {
+            TaskUser.destroy({ where: { userId: user_id, TasksId: TasksId } });
+            res.json('Ok')
+        } catch (error) {
+            res.json(error)
+        }
+    }
+
     async getUserTasks(req, res, next) {
         let { userId, page, limit, type } = req.query;
         page = page || 1;
@@ -276,10 +295,10 @@ class TasksController {
     }
 
     async getStatsTasks(req, res) {
-
-
+        let { type, name } = req.query;
 
         const tasks = await Tasks.findAll({
+            where: { typ: type },
             distinct: true,
             include: [{
                 model: Users,
@@ -306,14 +325,13 @@ class TasksController {
                     "score": item.TaskUser.rate.rating,
                 };
             });
-            result.push(...commitment, ...execution);
+            if ( name === "ФАКТ" ) {
+                result.push(...execution);
+            } else if (name === "ПЛАН") {
+                result.push(...commitment);
+            }
         });
         return res.json(result);
-
-
-
     }
 }
-//сразу указывает сколько сделает
-//админ только создает задачу, а юзеры сами выбирают сколько сделают в цифрах
 module.exports = new TasksController()

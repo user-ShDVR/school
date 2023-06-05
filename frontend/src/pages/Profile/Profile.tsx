@@ -23,7 +23,7 @@ const columns: ColumnsType<DataType> = [
 		title: 'Имя задачи',
 		dataIndex: 'name',
 		key: 'name',
-		render: (text) => <a>{text}</a>,
+		render: (text) => <p>{text}</p>,
 	},
 	{
 		title: 'Прогноз',
@@ -35,7 +35,7 @@ const columns: ColumnsType<DataType> = [
 		title: 'Экспертная оценка',
 		dataIndex: 'TaskUser',
 		key: 'rating',
-		render: (item) => item.rate.rating === 0 ? <p>Нету</p> : item.rate.rating,
+		render: (item) => item.rate.rating === 0 ? <p>Нет</p> : item.rate.rating,
 	},
 
 ];
@@ -165,9 +165,9 @@ const Profile: FC = (props) => {
 				{
 					label: 'Информация',
 					key: '1',
-					children: <Card title={user.name} extra={<><Button onClick={showModal} type="primary">Редактировать</Button> <Button onClick={onLogout} type="dashed">Выйти</Button></>} bordered={true} style={{ width: "100%", marginBottom: "32px" }}>
+					children: <Card title={user.name} bordered={true} style={{ width: "100%", marginBottom: "32px" }}>
 						<Paragraph>Права пользователя: {user.role == "ADMIN" ? "Администратор" : "Пользователь"} </Paragraph>
-						{/* <Paragraph>Должность: </Paragraph> */}
+						<Paragraph><Button onClick={showModal} type="primary">Редактировать</Button> <Button onClick={onLogout} type="dashed">Выйти</Button></Paragraph>
 					</Card>,
 				},
 				{
@@ -232,11 +232,6 @@ const Profile: FC = (props) => {
 				</Form.Item>
 			</Form>
 		</Modal>
-
-
-
-
 	</div>;
-
 };
 export default Profile;

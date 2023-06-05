@@ -7,7 +7,7 @@ import { RootState } from '../store';
 export const projectsApi = createApi({
     reducerPath: 'projectsApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: `http://45.12.73.150:5000/api/`,
+        baseUrl: `http://localhost:5000/api/`,
         prepareHeaders: (headers, { getState }) => {
             const token = (getState() as RootState).userState.token;
             if (token) {
@@ -59,6 +59,24 @@ export const projectsApi = createApi({
                 }
             }
         }),
+        deleteProj: builder.mutation({
+            query(data) {
+                return {
+                    url: 'delProj',
+                    method: 'POST',
+                    body: data,
+                }
+            }
+        }),
+        deleteUserProj: builder.mutation({
+            query(data) {
+                return {
+                    url: 'delUserProj',
+                    method: 'POST',
+                    body: data,
+                }
+            }
+        }),
         addRate: builder.mutation({
             query(data) {
                 const user = JSON.parse(localStorage.getItem('user'))
@@ -76,6 +94,8 @@ export const projectsApi = createApi({
 export const {
     useCreateProjectMutation,
     useAddUserMutation,
+    useDeleteUserProjMutation,
+    useDeleteProjMutation,
     useAddRateMutation,
     useGetAllProjectsQuery,
     useGetAllUserProjectsQuery,
