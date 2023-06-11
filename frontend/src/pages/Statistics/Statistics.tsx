@@ -175,12 +175,12 @@ const Statistics = () => {
 				{
 					label: 'Вариативная статистика',
 					key: '1',
-					children: <>{isSuccessStatVar && isSuccessStatVarF && dataStatVar.length >= 3 ? <Row justify="center"> <Col span={12} ><Radar style={{ height: "400px" }} {...config} /></Col>  <Col span={12} ><Radar style={{ height: "400px", }} {...configF} /></Col></Row> : 'Добавьте больше задач чтобы видеть статистику'}</>,
+					children: <>{isSuccessStatVar && isSuccessStatVarF && dataStatVar.length >= 3 ? <><Row justify="center"> <Col span={24} ><Radar {...config} /></Col></Row> <Row justify="center" ><Col span={24} ><Radar  {...configF} /></Col></Row></> : 'Добавьте больше задач чтобы видеть статистику'}</>,
 				},
 				{
 					label: 'Инвариантная статистика',
 					key: '2',
-					children: <>{isSuccessStatInvar && isSuccessStatInvarF && dataStatInvar.length >= 3 ? <Row justify="center"> <Col span={12} ><Radar style={{ height: "400px" }} {...configI} /></Col>  <Col span={12} ><Radar style={{ height: "400px", }} {...configIF} /></Col></Row> : 'Добавьте больше задач чтобы видеть статистику'}</>,
+					children: <>{isSuccessStatInvar && isSuccessStatInvarF && dataStatInvar.length >= 3 ? <><Row justify="center"> <Col span={24} ><Radar {...configI} /></Col></Row> <Row justify="center" ><Col span={24} ><Radar  {...configIF} /></Col></Row></> : 'Добавьте больше задач чтобы видеть статистику'}</>,
 				},
 			]}
 		/>
