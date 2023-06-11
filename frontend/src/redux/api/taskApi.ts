@@ -17,12 +17,12 @@ export const taskApi = createApi({
         },
     }),
     endpoints: (builder) => ({
-        getAllTasks: builder.query<any, { limit: string; page: string }>({
+        getAllTasks: builder.query<any, { limit: string; page: string, type: string }>({
             query(arg) {
-                const { limit, page } = arg;
+                const { limit, page, type } = arg;
                 return {
                     url: 'get_all_task',
-                    params: { limit, page },
+                    params: { limit, page, type },
                 };
             },
         }),

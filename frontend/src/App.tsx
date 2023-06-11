@@ -62,7 +62,7 @@ const App: React.FC = () => {
           <Content style={{ padding: '20px 30px', display: "flex", justifyContent: "center" }}>
             <Routes>
               <Route path='/' element={<Suspense fallback={<div>Загрузка...</div>}><Login /></Suspense>} />
-              <Route path="tasks" element={<Suspense fallback={<div>Загрузка...</div>}><Tasks /></Suspense>} />
+              <Route path="tasks/:taskType" element={<Suspense fallback={<div>Загрузка...</div>}><Tasks /></Suspense>} />
               <Route path="users" element={<Suspense fallback={<div>Загрузка...</div>}><Users /></Suspense>} />
               <Route path="my-projects" element={<Suspense fallback={<div>Загрузка...</div>}><MyProjects /></Suspense>} />
               <Route path="projects" element={<Suspense fallback={<div>Загрузка...</div>}><Projects /></Suspense>} />

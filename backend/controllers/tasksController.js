@@ -75,11 +75,12 @@ class TasksController {
 
 
     async getAll(req, res) {
-        let { limit, page } = req.query;
+        let { limit, page, type } = req.query;
         page = page || 1;
         limit = limit || 8;
         let offset = page * limit - limit;
         const tasks = await Tasks.findAndCountAll({
+            where: { typ: type },
             limit: limit,
             offset: offset,
             distinct: true,
@@ -121,13 +122,49 @@ class TasksController {
 
         const user = await Users.findOne({ where: { id: userId } });
         const task = await Tasks.findOne({ where: { id: contentId } });
+        const task_user = await TaskUser.findOne({ where: { TasksId: contentId, userId: userId  } });
+        
+        if (task_user){
 
-        if (user && task) {
-            task.addUsers(user, { through: { predicted: predict } })
-            return res.json(task) //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Пользователь успешно добавлен')
-        } else {
-            return next(ApiError.internal('Такого пользователя или проекта не существует'))
+            
+            const now = new Date();
+
+            const start = new Date(task_user.createdAt);
+
+            const diff = now.getTime() - start.getTime();
+
+            const weeks = Math.floor(diff / (1000 * 60 * 60 * 24 * 7));
+
+            if(weeks <= 2){
+
+                if (user && task) {
+                    task.addUsers(user, { through: { predicted: predict } })
+                    return res.json(task) //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Пользователь успешно добавлен')
+                } else {
+                    return next(ApiError.internal('Такого пользователя или проекта не существует'))
+                }
+
+
+            }
+            else{
+
+                return next(ApiError.internal('Нельзя изменить уже существующее предсказание'))
+
+
+            }
+
         }
+
+        else{
+
+            if (user && task) {
+                task.addUsers(user, { through: { predicted: predict } })
+                return res.json(task) //Вместо ответа сделай на подобии ApiError только ApiSuccess.GoodRequest('Пользователь успешно добавлен')
+            } else {
+                return next(ApiError.internal('Такого пользователя или проекта не существует'))
+            }
+        }
+
 
     }
 

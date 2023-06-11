@@ -1,7 +1,7 @@
 import avatar from "../../assets/Avatar.png";
 import { Avatar, Button, Card, Col, Divider, InputNumber, Modal, Popconfirm, Row } from 'antd';
 import { ProjectTwoTone } from '@ant-design/icons';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import varTaskLogo from '../../assets/Задачи вариативные.png';
 import invarTaskLogo from '../../assets/Задачи инвариантные.png';
 import { useAddUserMutation, useDeleteTaskMutation } from "../../redux/api/taskApi";
@@ -69,6 +69,15 @@ export const TaskItem = ({ item, refetch, user }) => {
 		}
 
 	}
+
+	useEffect(() => {
+		if (isError) {
+			toast.error((error as any).data.message, {
+				position: 'top-right',
+			  });
+		}
+	  }, [isError]);
+
 	const date = new Date(item.stop);
 	return <>
 

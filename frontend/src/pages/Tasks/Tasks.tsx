@@ -8,17 +8,19 @@ import { NotificationPlacement } from "antd/es/notification/interface";
 import { toast } from "react-toastify";
 import { useAppSelector } from "../../redux/hooks";
 import { selectUser } from "../../redux/features/userSlice";
+import { useParams } from "react-router-dom";
 
 
 
 const Tasks = () => {
+	const { taskType } = useParams();
 	const { user } = useAppSelector(selectUser);
 	const [modalOpen, setModalOpen] = useState(false);
 	const [current, setCurrent] = useState(1);
 	const [form] = Form.useForm();
 	const [fileList, setFileList] = useState([]);
 	const [api, contextHolder] = notification.useNotification();
-	const { data, isSuccess, refetch } = useGetAllTasksQuery({ limit: '8', page: `${current}` })
+	const { data, isSuccess, refetch } = useGetAllTasksQuery({ limit: '8', page: `${current}`, type: taskType })
 	const [createProject, { isSuccess: isCreateSuccess, isError, error }] = useCreateTaskMutation();
 	const onChange = (page) => {
 		setCurrent(page);
