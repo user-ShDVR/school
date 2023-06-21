@@ -2,8 +2,9 @@ import React, { FC, useState } from 'react';
 import { Button, FloatButton, Form, Input, Modal, Pagination, Select, Space, Table, TableColumnsType } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useDeleteUserMutation, useGetAllUsersQuery, useUpdateUserMutation } from '../../redux/api/userApi';
-import { PlusOutlined} from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined} from '@ant-design/icons';
 import Register from '../Register/Register';
+import { useDeleteAllTaskMutation } from '../../redux/api/taskApi';
 
 const Users: FC = (props) => {
 
@@ -76,7 +77,8 @@ const Users: FC = (props) => {
 	const { data, isSuccess, refetch } = useGetAllUsersQuery({ limit: '8', page: `${current}` });
 	const [updateUser] = useUpdateUserMutation();
 	const [deleteUser] = useDeleteUserMutation();
-
+	const [deleteTask] = useDeleteAllTaskMutation();
+	
 	const handleInputChange = (value, id, key) => {
 		setEditedData((prev) => ({
 			...prev,
@@ -137,13 +139,21 @@ const Users: FC = (props) => {
 				</>
 				:
 				null}
-
+			<FloatButton.Group>
 			<FloatButton
 				icon={<PlusOutlined />}
 				shape="circle"
 				tooltip={<div>Добавить пользователя</div>}
 				onClick={() => setModalOpen(true)}
 			/>
+			<FloatButton
+				icon={<DeleteOutlined />}
+				shape="circle"
+				tooltip={<div>Удалить задачи</div>}
+				onClick={deleteTask}
+			/>	
+			</FloatButton.Group>
+			
 			<Modal
 				width={1024}
 				title="Добавить пользователя"

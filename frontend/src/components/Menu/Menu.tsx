@@ -49,5 +49,5 @@ export const MenuComponent = () => {
 if (!user) {
 	return null;
 }
-return <Menu style={{ flex: "none", minWidth: 0 }} theme="light" mode="horizontal" items={MenuItems} />;
+return <Menu theme="light" mode="horizontal" items={MenuItems} />;
 };

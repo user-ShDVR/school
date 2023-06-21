@@ -48,6 +48,18 @@ export const projectsApi = createApi({
                 }
             }
         }),
+        editProject: builder.mutation({
+            query(data) {
+                const user = JSON.parse(localStorage.getItem('user'))
+		        data.append("userId", user.user.id)
+                return {
+                    url: 'editUserProj',
+                    method: 'POST',
+                    body: data,
+                    formData: true,
+                }
+            }
+        }),
         addUser: builder.mutation({
             query(data) {
                 const user = JSON.parse(localStorage.getItem('user'))
@@ -93,6 +105,7 @@ export const projectsApi = createApi({
 
 export const {
     useCreateProjectMutation,
+    useEditProjectMutation,
     useAddUserMutation,
     useDeleteUserProjMutation,
     useDeleteProjMutation,

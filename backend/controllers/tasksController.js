@@ -370,5 +370,16 @@ class TasksController {
         });
         return res.json(result);
     }
+    async del_allTasks(req, res) {
+
+        try {
+            await Tasks.destroy({ truncate: { cascade: true } });
+            await CheckRatingTask.destroy({ truncate: { cascade: true } });
+            await TaskUser.destroy({ truncate: { cascade: true } });
+            res.json('Задачи удалены')
+        } catch (error) {
+            res.json(error)
+        }
+    }
 }
 module.exports = new TasksController()

@@ -77,8 +77,6 @@ export const TaskItem = ({ item, refetch, user }) => {
 			  });
 		}
 	  }, [isError]);
-
-	const date = new Date(item.stop);
 	return <>
 
 		<Card
@@ -120,7 +118,6 @@ export const TaskItem = ({ item, refetch, user }) => {
 		>
 			<Divider />
 			<p>Тип задачи: {item.typ === "INVAR" ? "Инвариантный" : "Вариативный"}</p>
-			<p>Время закрытия задачи: 31.05.{date.getFullYear()}</p>
 			<p>Описание задачи: <pre>{item.description}</pre></p>
 			<p>Пользователи находящиеся в задаче:</p>
 			<Table size='small' columns={columns} dataSource={item.users} rowKey="id" />

@@ -6,7 +6,7 @@ import { RegisterInput } from '../../pages/Register/Register';
 import { LoginInput } from '../../pages/Login/Login';
 
 
-
+//45.12.73.150
 export const authApi = createApi({
     reducerPath: 'authApi',
     baseQuery: fetchBaseQuery({

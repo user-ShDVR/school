@@ -186,6 +186,40 @@ class TypeController {
             res.json(error)
         }
     }
+    
+    async change_inf_project(req, res) {
+
+        let {id, name, description, workers } = req.body;
+        const { f } = req.files
+
+        try {
+
+            const ok = await Contests.findByPk(id);
+
+            if (!ok) {
+
+                return res.json("Проект не найден")
+
+            }
+            if(f){
+            let fileName = uuid.v4() + path.parse(f.name).ext;
+            f.mv(path.resolve(__dirname, '..', 'static', fileName))    
+            await ok.update({name, description, workers, fileName});
+    
+            return res.json("Инфа обновлена")
+        }else{
+
+            await ok.update({name, description, workers});
+
+            return res.json("Инфа обновлена")
+
+        }
+
+        } catch (e) {
+            return res.json(e)
+        }
+
+    }
 }
 
 module.exports = new TypeController()

@@ -76,6 +76,14 @@ export const taskApi = createApi({
                 }
             }
         }),
+        deleteAllTask: builder.mutation({
+            query() {
+                return {
+                    url: 'delallTask',
+                    method: 'POST',
+                }
+            }
+        }),
         getAllUserTasks: builder.query<any, { limit: string; page: string; type?: string; }>({
             query(arg) {
                 const { limit, page, type } = arg;
@@ -117,6 +125,7 @@ export const {
     useCreateTaskMutation,
     useAddUserMutation,
     useDeleteTaskMutation,
+    useDeleteAllTaskMutation,
     useAddRateMutation,
     useGetAllUserStatQuery,
     useGetAllUserTasksQuery,
