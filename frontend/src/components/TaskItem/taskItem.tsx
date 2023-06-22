@@ -145,7 +145,7 @@ export const TaskItem = ({ item, refetch, user }) => {
 					</Popconfirm>
 				</Col>
 				<Col flex="auto"></Col>
-				<Col flex="auto" ><Link target="_blank" to={`http://45.12.73.150:5000/${item.fileName}`}><Button style={{ width: "100%" }} type="default" onClick={() => setModalOpen(true)}>
+				<Col flex="auto" ><Link target="_blank" to={`http://31.129.96.5:5000/${item.fileName}`}><Button style={{ width: "100%" }} type="default" onClick={() => setModalOpen(true)}>
 					Открыть карточку задачи
 				</Button></Link></Col>
 			</Row>

@@ -7,7 +7,7 @@ import { RootState } from '../store';
 export const taskApi = createApi({
     reducerPath: 'taskApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: `http://45.12.73.150:5000/api/`,
+        baseUrl: `http://31.129.96.5:5000/api/`,
         prepareHeaders: (headers, { getState }) => {
             const token = (getState() as RootState).userState.token;
             if (token) {

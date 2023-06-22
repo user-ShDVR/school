@@ -27,8 +27,8 @@ export const Item = ({userProject, item, refetch }) => {
 			uid: '0',
 			name: `${item.fileName}`,
 			status: 'done',
-			url: `http://45.12.73.150:5000/${item.fileName}`,
-			thumbUrl: `http://45.12.73.150:5000/${item.fileName}`,
+			url: `http://31.129.96.5:5000/${item.fileName}`,
+			thumbUrl: `http://31.129.96.5:5000/${item.fileName}`,
 		  },
 	]);
 	const [form] = Form.useForm();
@@ -297,7 +297,7 @@ const EditProjButton = () => {
 					</Popconfirm> : null}
 				</Col>
 				<Col flex="auto" >
-					<Link target="_blank" to={`http://45.12.73.150:5000/${item.fileName}`}><Button style={{ width: "100%" }} type="default" onClick={() => setModalOpen(true)}>
+					<Link target="_blank" to={`http://31.129.96.5:5000/${item.fileName}`}><Button style={{ width: "100%" }} type="default" onClick={() => setModalOpen(true)}>
 					Открыть карточку проекта
 				</Button></Link>
 					</Col>

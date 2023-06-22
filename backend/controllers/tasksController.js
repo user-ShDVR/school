@@ -22,7 +22,7 @@ async function sendEmail(task_id) {
         from: 'savelyev_av@edu.surgu.ru',
         to: all_exp,
         subject: 'Привет',
-        text: `Вам необходимо поставить рейтинг по такой ссылке https://host.com/rating?taskId=${task_id}`
+        text: `Вам необходимо поставить рейтинг по такой ссылке https://31.129.96.5:3000/rating?taskId=${task_id}`
     };
     console.log(1)
     transporter.sendMail(mailOptions, (error, info) => {

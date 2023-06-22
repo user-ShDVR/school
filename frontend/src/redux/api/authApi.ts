@@ -6,11 +6,11 @@ import { RegisterInput } from '../../pages/Register/Register';
 import { LoginInput } from '../../pages/Login/Login';
 
 
-//45.12.73.150
+//31.129.96.5
 export const authApi = createApi({
     reducerPath: 'authApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: `http://45.12.73.150:5000/api/user/`,
+        baseUrl: `http://31.129.96.5:5000/api/user/`,
         prepareHeaders: (headers, { getState, endpoint }) => {
             const token = (getState() as RootState).userState.token;
             if (token && endpoint == 'editUser') {
